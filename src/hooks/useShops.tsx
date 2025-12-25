@@ -5,6 +5,7 @@ import { Shop, Category } from '@/types/database';
 interface UseShopsOptions {
   categoryId?: string;
   city?: string;
+  area?: string;
   searchQuery?: string;
   limit?: number;
 }
@@ -36,6 +37,10 @@ export function useShops(options: UseShopsOptions = {}) {
         query = query.ilike('city', `%${options.city}%`);
       }
 
+      if (options.area) {
+        query = query.ilike('area', `%${options.area}%`);
+      }
+
       if (options.searchQuery) {
         query = query.or(`name.ilike.%${options.searchQuery}%,area.ilike.%${options.searchQuery}%`);
       }
@@ -61,7 +66,7 @@ export function useShops(options: UseShopsOptions = {}) {
     } finally {
       setIsLoading(false);
     }
-  }, [options.categoryId, options.city, options.searchQuery, options.limit]);
+  }, [options.categoryId, options.city, options.area, options.searchQuery, options.limit]);
 
   useEffect(() => {
     fetchShops();
