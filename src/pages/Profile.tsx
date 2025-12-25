@@ -3,6 +3,7 @@ import { useAuth } from '@/hooks/useAuth';
 import { Button } from '@/components/ui/button';
 import MobileLayout from '@/components/MobileLayout';
 import { Link, useNavigate } from 'react-router-dom';
+import ThemeToggle from '@/components/ThemeToggle';
 
 const Profile = () => {
   const navigate = useNavigate();
@@ -147,7 +148,10 @@ const Profile = () => {
           ))}
         </div>
 
-        {/* Sign Out */}
+        {/* Theme Toggle */}
+        <div className="mt-4">
+          <ThemeToggle />
+        </div>
         <Button
           variant="outline"
           className="w-full mt-6"
