@@ -18,6 +18,7 @@ import VendorStatusBanner from '@/components/VendorStatusBanner';
 import ShopSwitcher, { ShopSwitcherTrigger } from '@/components/ShopSwitcher';
 import VendorOnboardingChecklist from '@/components/VendorOnboardingChecklist';
 import VendorAnalyticsDashboard from '@/components/VendorAnalyticsDashboard';
+import VendorCustomerFeedback from '@/components/VendorCustomerFeedback';
 import { 
   ArrowLeft, 
   Store, 
@@ -367,6 +368,9 @@ const Vendor = () => {
 
         {/* Analytics Dashboard */}
         <VendorAnalyticsDashboard shopId={shop.id} />
+
+        {/* Customer Feedback */}
+        <VendorCustomerFeedback shopId={shop.id} />
 
         {/* Portfolio Preview */}
         <div>
