@@ -11,6 +11,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import MobileLayout from '@/components/MobileLayout';
 import ProductImageUpload from '@/components/ProductImageUpload';
+import BulkProductImport from '@/components/BulkProductImport';
 import { ArrowLeft, Plus, Trash2, Edit, Sparkles } from 'lucide-react';
 import { toast } from '@/hooks/use-toast';
 import { Product } from '@/types/database';
@@ -149,10 +150,13 @@ const VendorProducts = () => {
               Products
             </h1>
           </div>
-          <Button size="sm" onClick={openCreateDialog}>
-            <Plus className="h-4 w-4 mr-1" />
-            Add
-          </Button>
+          <div className="flex items-center gap-2">
+            <BulkProductImport shopId={shop.id} onImportComplete={refetch} />
+            <Button size="sm" onClick={openCreateDialog}>
+              <Plus className="h-4 w-4 mr-1" />
+              Add
+            </Button>
+          </div>
         </div>
       </header>
 
