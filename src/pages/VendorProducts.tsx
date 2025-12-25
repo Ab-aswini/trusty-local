@@ -10,6 +10,7 @@ import { Textarea } from '@/components/ui/textarea';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import MobileLayout from '@/components/MobileLayout';
+import ProductImageUpload from '@/components/ProductImageUpload';
 import { ArrowLeft, Plus, Trash2, Edit, Sparkles } from 'lucide-react';
 import { toast } from '@/hooks/use-toast';
 import { Product } from '@/types/database';
@@ -180,13 +181,12 @@ const VendorProducts = () => {
           <div className="space-y-3">
             {products.map((product) => (
               <div key={product.id} className="card-soft p-3 flex gap-3">
-                <div className="w-16 h-16 bg-muted rounded-xl overflow-hidden flex-shrink-0">
-                  {product.image_url ? (
-                    <img src={product.image_url} alt={product.name} className="w-full h-full object-cover" />
-                  ) : (
-                    <div className="w-full h-full flex items-center justify-center text-xl">📦</div>
-                  )}
-                </div>
+                <ProductImageUpload
+                  productId={product.id}
+                  currentImage={product.image_url}
+                  productName={product.name}
+                  onImageUpdated={() => refetch()}
+                />
                 <div className="flex-1 min-w-0">
                   <h3 className="font-medium text-sm truncate">{product.name}</h3>
                   <p className="text-xs text-primary font-medium">
