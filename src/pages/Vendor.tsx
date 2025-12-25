@@ -16,6 +16,7 @@ import SocialLinksEditor from '@/components/SocialLinksEditor';
 import ShopDetailsEditor from '@/components/ShopDetailsEditor';
 import VendorStatusBanner from '@/components/VendorStatusBanner';
 import ShopSwitcher, { ShopSwitcherTrigger } from '@/components/ShopSwitcher';
+import VendorOnboardingChecklist from '@/components/VendorOnboardingChecklist';
 import { 
   ArrowLeft, 
   Store, 
@@ -317,6 +318,15 @@ const Vendor = () => {
       <main className="px-4 py-4 space-y-4 pb-24">
         {/* Status Banner */}
         <VendorStatusBanner shop={shop} />
+        
+        {/* Onboarding Checklist */}
+        <VendorOnboardingChecklist
+          shop={shop}
+          products={products}
+          onNavigateProducts={() => navigate('/vendor/products')}
+          onOpenSocialLinks={() => setIsSocialLinksOpen(true)}
+          onOpenDetails={() => setIsDetailsOpen(true)}
+        />
         {/* Shop Identity Card with Image Upload */}
         <div className="card-soft p-4">
           <div className="flex items-center gap-4 mb-4">
