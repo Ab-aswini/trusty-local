@@ -10,8 +10,18 @@ interface UseShopsOptions {
   limit?: number;
 }
 
+export interface ShopWithProducts extends Shop {
+  products?: {
+    id: string;
+    name: string;
+    image_url: string | null;
+    price_type: string;
+    price_fixed: number | null;
+  }[];
+}
+
 export function useShops(options: UseShopsOptions = {}) {
-  const [shops, setShops] = useState<Shop[]>([]);
+  const [shops, setShops] = useState<ShopWithProducts[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
@@ -24,7 +34,8 @@ export function useShops(options: UseShopsOptions = {}) {
         .from('shops')
         .select(`
           *,
-          category:categories(*)
+          category:categories(*),
+          products(id, name, image_url, price_type, price_fixed)
         `)
         .eq('vendor_status', 'approved')
         .order('created_at', { ascending: false });
@@ -57,7 +68,8 @@ export function useShops(options: UseShopsOptions = {}) {
       const transformedShops = (data || []).map(shop => ({
         ...shop,
         category: shop.category as Category | undefined,
-      })) as Shop[];
+        products: (shop.products || []).slice(0, 3), // Limit to 3 products for preview
+      })) as ShopWithProducts[];
 
       setShops(transformedShops);
     } catch (err) {
