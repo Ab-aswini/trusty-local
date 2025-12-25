@@ -1,6 +1,6 @@
 import { useParams, useNavigate } from 'react-router-dom';
 import { useShopById } from '@/hooks/useShops';
-import { useProducts } from '@/hooks/useProducts';
+import { useProducts } from '@/hooks/useVendorProducts';
 import { useAuth } from '@/hooks/useAuth';
 import { useSavedShops } from '@/hooks/useSavedShops';
 import { useInteractions } from '@/hooks/useInteractions';

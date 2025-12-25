@@ -68,10 +68,30 @@ export function useVendorProducts(shopId: string | undefined) {
     fetchProducts();
   }, [fetchProducts]);
 
-  const createProduct = async (productData: Partial<Product>) => {
+  const createProduct = async (productData: {
+    name: string;
+    shop_id: string;
+    description?: string | null;
+    price_type?: 'fixed' | 'range' | 'discount' | 'enquiry';
+    price_fixed?: number | null;
+    price_min?: number | null;
+    price_max?: number | null;
+    price_original?: number | null;
+    price_discounted?: number | null;
+  }) => {
     const { data, error } = await supabase
       .from('products')
-      .insert(productData)
+      .insert({
+        name: productData.name,
+        shop_id: productData.shop_id,
+        description: productData.description,
+        price_type: productData.price_type || 'enquiry',
+        price_fixed: productData.price_fixed,
+        price_min: productData.price_min,
+        price_max: productData.price_max,
+        price_original: productData.price_original,
+        price_discounted: productData.price_discounted,
+      })
       .select()
       .single();
 

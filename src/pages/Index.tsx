@@ -1,4 +1,5 @@
 import { Search, MapPin } from 'lucide-react';
+import { useNavigate } from 'react-router-dom';
 import { useAuth } from '@/hooks/useAuth';
 import { useShops, useCategories } from '@/hooks/useShops';
 import { Button } from '@/components/ui/button';
@@ -7,6 +8,7 @@ import { useState } from 'react';
 import MobileLayout from '@/components/MobileLayout';
 
 const Index = () => {
+  const navigate = useNavigate();
   const { user, signInWithGoogle, isLoading: authLoading } = useAuth();
   const { categories } = useCategories();
   const [selectedCategory, setSelectedCategory] = useState<string | undefined>();
@@ -122,6 +124,7 @@ const Index = () => {
             {shops.map((shop) => (
               <div
                 key={shop.id}
+                onClick={() => navigate(`/shop/${shop.id}`)}
                 className="card-soft p-4 hover:shadow-elevated transition-calm cursor-pointer"
               >
                 {/* Shop Image */}

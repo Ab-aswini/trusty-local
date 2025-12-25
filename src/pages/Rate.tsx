@@ -24,11 +24,11 @@ const Rate = () => {
   const interaction = pendingRatings.find(i => i.id === interactionId);
   const { shop } = useShopById(interaction?.shop_id);
   
-  const [selectedTags, setSelectedTags] = useState<Record<string, boolean>>({
-    is_helpful: false,
-    is_honest: false,
-    is_respectful: false,
-    is_calm: false,
+  const [selectedTags, setSelectedTags] = useState({
+    isHelpful: false,
+    isHonest: false,
+    isRespectful: false,
+    isCalm: false,
   });
   const [isSubmitting, setIsSubmitting] = useState(false);
 
@@ -38,8 +38,23 @@ const Rate = () => {
     }
   }, [user, navigate]);
 
+  const tagKeyMap: Record<string, keyof typeof selectedTags> = {
+    is_helpful: 'isHelpful',
+    is_honest: 'isHonest',
+    is_respectful: 'isRespectful',
+    is_calm: 'isCalm',
+  };
+
   const toggleTag = (key: string) => {
-    setSelectedTags(prev => ({ ...prev, [key]: !prev[key] }));
+    const mappedKey = tagKeyMap[key];
+    if (mappedKey) {
+      setSelectedTags(prev => ({ ...prev, [mappedKey]: !prev[mappedKey] }));
+    }
+  };
+
+  const isTagSelected = (key: string) => {
+    const mappedKey = tagKeyMap[key];
+    return mappedKey ? selectedTags[mappedKey] : false;
   };
 
   const handleSubmit = async () => {
@@ -133,7 +148,7 @@ const Rate = () => {
               key={tag.key}
               onClick={() => toggleTag(tag.key)}
               className={`card-soft p-4 w-full flex items-center gap-4 transition-calm ${
-                selectedTags[tag.key] 
+                isTagSelected(tag.key) 
                   ? 'border-2 border-primary bg-primary/5' 
                   : 'hover:shadow-elevated'
               }`}
@@ -144,11 +159,11 @@ const Rate = () => {
                 <p className="text-xs text-muted-foreground">{tag.description}</p>
               </div>
               <div className={`w-6 h-6 rounded-full flex items-center justify-center ${
-                selectedTags[tag.key]
+                isTagSelected(tag.key)
                   ? 'bg-primary text-primary-foreground'
                   : 'bg-muted'
               }`}>
-                {selectedTags[tag.key] && <Check className="h-4 w-4" />}
+                {isTagSelected(tag.key) && <Check className="h-4 w-4" />}
               </div>
             </button>
           ))}

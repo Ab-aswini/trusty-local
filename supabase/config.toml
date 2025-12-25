@@ -1,1 +1,4 @@
 project_id = "gtkluhiusnsrtqjfxygt"
+
+[functions.ai-studio]
+verify_jwt = true
