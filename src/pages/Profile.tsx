@@ -2,10 +2,11 @@ import { User, Settings, Store, LogOut, ChevronRight, Shield, Bell, HelpCircle }
 import { useAuth } from '@/hooks/useAuth';
 import { Button } from '@/components/ui/button';
 import MobileLayout from '@/components/MobileLayout';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 
 const Profile = () => {
-  const { user, signInWithGoogle, signOut, isLoading } = useAuth();
+  const navigate = useNavigate();
+  const { user, signOut, isLoading } = useAuth();
 
   if (isLoading) {
     return (
@@ -31,8 +32,8 @@ const Profile = () => {
             <p className="text-sm text-muted-foreground mb-6">
               Sign in to access your profile, saved shops, and more
             </p>
-            <Button onClick={signInWithGoogle} className="w-full">
-              Sign in with Google
+            <Button onClick={() => navigate('/auth')} className="w-full">
+              Sign In / Sign Up
             </Button>
           </div>
 
