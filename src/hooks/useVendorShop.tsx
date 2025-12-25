@@ -36,12 +36,19 @@ export function useVendorShop() {
     fetchShop();
   }, [fetchShop]);
 
-  const createShop = async (shopData: Partial<Shop>) => {
+  const createShop = async (shopData: { name: string; whatsapp_number: string; city: string; area: string; story?: string }) => {
     if (!user) throw new Error('Not authenticated');
 
     const { data, error } = await supabase
       .from('shops')
-      .insert({ ...shopData, owner_id: user.id })
+      .insert({
+        name: shopData.name,
+        whatsapp_number: shopData.whatsapp_number,
+        city: shopData.city,
+        area: shopData.area,
+        story: shopData.story || null,
+        owner_id: user.id,
+      })
       .select()
       .single();
 
