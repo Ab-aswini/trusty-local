@@ -54,10 +54,18 @@ const VendorPortfolioPreview = ({ shop, products }: VendorPortfolioPreviewProps)
         
         {/* Shop Logo/Initial */}
         <div className="absolute bottom-0 left-1/2 -translate-x-1/2 translate-y-1/2">
-          <div className="w-16 h-16 rounded-full bg-amber-400 border-4 border-background flex items-center justify-center shadow-lg">
-            <span className="text-2xl font-bold text-background">
-              {shop.name.charAt(0).toUpperCase()}
-            </span>
+          <div className="w-16 h-16 rounded-full bg-amber-400 border-4 border-background flex items-center justify-center shadow-lg overflow-hidden">
+            {shop.image_url ? (
+              <img 
+                src={shop.image_url} 
+                alt={shop.name}
+                className="w-full h-full object-cover"
+              />
+            ) : (
+              <span className="text-2xl font-bold text-amber-900">
+                {shop.name.charAt(0).toUpperCase()}
+              </span>
+            )}
           </div>
         </div>
       </div>
