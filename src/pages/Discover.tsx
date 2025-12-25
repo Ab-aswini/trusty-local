@@ -1,17 +1,20 @@
+import { useCallback } from 'react';
 import { Sparkles, TrendingUp, Star, Clock, MapPin, ChevronRight, Crown, Zap } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import { useShops, useCategories } from '@/hooks/useShops';
 import MobileLayout from '@/components/MobileLayout';
 import { Badge } from '@/components/ui/badge';
+import PullToRefresh from '@/components/PullToRefresh';
+import { toast } from '@/hooks/use-toast';
 
 const Discover = () => {
   const navigate = useNavigate();
   
-  const { shops: allShops, isLoading: shopsLoading } = useShops({
+  const { shops: allShops, isLoading: shopsLoading, refetch: refetchShops } = useShops({
     limit: 20,
   });
 
-  const { categories, isLoading: categoriesLoading } = useCategories();
+  const { categories, isLoading: categoriesLoading, refetch: refetchCategories } = useCategories();
 
   // Filter shops by different criteria
   const trustedShops = allShops.filter(s => s.trust_state === 'trusted' || s.trust_state === 'reliable');
@@ -31,6 +34,11 @@ const Discover = () => {
     }
   };
 
+  const handleRefresh = useCallback(async () => {
+    await Promise.all([refetchShops(), refetchCategories()]);
+    toast({ title: "Refreshed!" });
+  }, [refetchShops, refetchCategories]);
+
   return (
     <MobileLayout>
       {/* Header */}
@@ -48,8 +56,9 @@ const Discover = () => {
         </div>
       </header>
 
-      <main className="px-4 py-6 space-y-8">
-        {/* Trending Categories */}
+      <PullToRefresh onRefresh={handleRefresh} className="flex-1">
+        <main className="px-4 py-6 space-y-8">
+          {/* Trending Categories */}
         <section>
           <div className="flex items-center justify-between mb-4">
             <div className="flex items-center gap-2">
@@ -387,7 +396,8 @@ const Discover = () => {
             </p>
           </div>
         </section>
-      </main>
+        </main>
+      </PullToRefresh>
     </MobileLayout>
   );
 };
