@@ -1,13 +1,16 @@
 import { User, Settings, Store, LogOut, ChevronRight, Shield, Bell, HelpCircle, ShieldCheck } from 'lucide-react';
 import { useAuth } from '@/hooks/useAuth';
+import { useConsumerTrust } from '@/hooks/useConsumerTrust';
 import { Button } from '@/components/ui/button';
 import MobileLayout from '@/components/MobileLayout';
+import TrustBadge from '@/components/TrustBadge';
 import { Link, useNavigate } from 'react-router-dom';
 import ThemeToggle from '@/components/ThemeToggle';
 
 const Profile = () => {
   const navigate = useNavigate();
   const { user, signOut, isLoading, isAdmin } = useAuth();
+  const { trust } = useConsumerTrust();
 
   if (isLoading) {
     return (
@@ -95,6 +98,21 @@ const Profile = () => {
       </header>
 
       <main className="px-4 py-6">
+        {/* Trust Message */}
+        {trust && (
+          <div className="card-soft p-4 mb-6 bg-primary/5 border-primary/10">
+            <div className="flex items-center justify-between">
+              <div>
+                <p className="text-sm font-medium text-foreground mb-1">Your Trust Status</p>
+                <p className="text-xs text-muted-foreground">
+                  Your good behaviour helps shops serve you better
+                </p>
+              </div>
+              <TrustBadge level={trust.trust_level} size="md" />
+            </div>
+          </div>
+        )}
+
         {/* Quick Stats */}
         <div className="grid grid-cols-3 gap-3 mb-6">
           <div className="card-soft p-4 text-center">
@@ -102,12 +120,16 @@ const Profile = () => {
             <p className="text-xs text-muted-foreground">Saved</p>
           </div>
           <div className="card-soft p-4 text-center">
-            <p className="text-2xl font-display font-semibold text-primary">0</p>
-            <p className="text-xs text-muted-foreground">Ratings</p>
+            <p className="text-2xl font-display font-semibold text-primary">
+              {trust?.positive_interactions || 0}
+            </p>
+            <p className="text-xs text-muted-foreground">Reviews</p>
           </div>
           <div className="card-soft p-4 text-center">
-            <p className="text-2xl font-display font-semibold text-primary">0</p>
-            <p className="text-xs text-muted-foreground">Visits</p>
+            <p className="text-2xl font-display font-semibold text-primary">
+              {trust?.total_interactions || 0}
+            </p>
+            <p className="text-xs text-muted-foreground">Interactions</p>
           </div>
         </div>
 

@@ -6,10 +6,12 @@ import { useAuth } from '@/hooks/useAuth';
 import { useSavedShops } from '@/hooks/useSavedShops';
 import { useInteractions } from '@/hooks/useInteractions';
 import { useShopRatings } from '@/hooks/useShopRatings';
+import { useShopReviews } from '@/hooks/useShopReviews';
 import { Button } from '@/components/ui/button';
 import MobileLayout from '@/components/MobileLayout';
 import ProductGallery from '@/components/ProductGallery';
 import RatingsSummary from '@/components/RatingsSummary';
+import ReviewsDisplay from '@/components/ReviewsDisplay';
 import { 
   ArrowLeft, 
   Bookmark, 
@@ -35,6 +37,7 @@ const Shop = () => {
   const { isShopSaved, toggleSave } = useSavedShops();
   const { logInteraction } = useInteractions();
   const { summary: ratingsSummary, isLoading: ratingsLoading } = useShopRatings(shopId);
+  const { reviews, summary: reviewsSummary, isLoading: reviewsLoading } = useShopReviews(shopId);
   const viewLoggedRef = useRef(false);
 
   // Log view interaction once per page load
@@ -267,6 +270,16 @@ const Shop = () => {
           ) : (
             <RatingsSummary summary={ratingsSummary} interactionCount={shop.interaction_count} />
           )}
+        </div>
+
+        {/* Reviews Section */}
+        <div>
+          <h2 className="font-display font-medium text-foreground mb-3">Customer Reviews</h2>
+          <ReviewsDisplay 
+            reviews={reviews} 
+            summary={reviewsSummary} 
+            isLoading={reviewsLoading} 
+          />
         </div>
 
         {/* Products Section */}

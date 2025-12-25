@@ -107,6 +107,12 @@ export interface Rating {
   is_respectful: boolean;
   is_helpful: boolean;
   is_calm: boolean;
+  is_patient: boolean;
+  is_clear_communication: boolean;
+  star_rating: number | null;
+  review_text: string | null;
+  reviewer_display_name: string | null;
+  source: string;
   created_at: string;
 }
 
