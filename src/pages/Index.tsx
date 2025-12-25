@@ -6,6 +6,7 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { useState } from 'react';
 import MobileLayout from '@/components/MobileLayout';
+import PendingRatingsBanner from '@/components/PendingRatingsBanner';
 
 const Index = () => {
   const navigate = useNavigate();
@@ -60,6 +61,9 @@ const Index = () => {
           </div>
         </div>
       </header>
+
+      {/* Pending Ratings Banner */}
+      <PendingRatingsBanner />
 
       {/* Location hint */}
       <div className="bg-primary/5 border-b border-primary/10">
