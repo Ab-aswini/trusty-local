@@ -16,9 +16,11 @@ import {
   MessageCircle,
   Download,
   Store,
-  Star
+  Star,
+  Printer
 } from 'lucide-react';
 import { toast } from '@/hooks/use-toast';
+import PrintableRatingCard from './PrintableRatingCard';
 
 interface SharePortfolioProps {
   shop: Shop;
@@ -29,6 +31,7 @@ interface SharePortfolioProps {
 const SharePortfolio = ({ shop, isOpen, onClose }: SharePortfolioProps) => {
   const [copied, setCopied] = useState(false);
   const [activeTab, setActiveTab] = useState('shop');
+  const [showPrintCard, setShowPrintCard] = useState(false);
   
   const portfolioUrl = `${window.location.origin}/shop/${shop.id}`;
   const ratingUrl = `${window.location.origin}/qr/${shop.id}`;
@@ -222,11 +225,27 @@ const SharePortfolio = ({ shop, isOpen, onClose }: SharePortfolioProps) => {
                   <li>• Ask happy customers to scan</li>
                   <li>• More ratings = more trust!</li>
                 </ul>
+                <Button
+                  variant="outline"
+                  size="sm"
+                  className="w-full mt-3"
+                  onClick={() => setShowPrintCard(true)}
+                >
+                  <Printer className="h-4 w-4 mr-2" />
+                  Get Printable Card
+                </Button>
               </>
             )}
           </div>
         </div>
       </DialogContent>
+
+      {/* Printable Card Modal */}
+      <PrintableRatingCard 
+        shop={shop} 
+        isOpen={showPrintCard} 
+        onClose={() => setShowPrintCard(false)} 
+      />
     </Dialog>
   );
 };
