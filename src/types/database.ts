@@ -64,6 +64,7 @@ export interface Shop {
   instagram_url: string | null;
   facebook_url: string | null;
   google_maps_url: string | null;
+  established_year: number | null;
   created_at: string;
   updated_at: string;
   // Joined fields

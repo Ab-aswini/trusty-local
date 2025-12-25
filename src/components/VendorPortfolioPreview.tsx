@@ -87,9 +87,11 @@ const VendorPortfolioPreview = ({ shop, products }: VendorPortfolioPreviewProps)
           ))}
         </div>
         
-        <p className="text-xs text-muted-foreground">
-          Since {new Date(shop.created_at).getFullYear()}
-        </p>
+        {shop.established_year && (
+          <p className="text-xs text-muted-foreground">
+            Since {shop.established_year}
+          </p>
+        )}
       </div>
 
       {/* Contact Info */}

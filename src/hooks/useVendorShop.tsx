@@ -36,7 +36,7 @@ export function useVendorShop() {
     fetchShop();
   }, [fetchShop]);
 
-  const createShop = async (shopData: { name: string; whatsapp_number: string; city: string; area: string; story?: string }) => {
+  const createShop = async (shopData: { name: string; whatsapp_number: string; city: string; area: string; story?: string; established_year?: number }) => {
     if (!user) throw new Error('Not authenticated');
 
     const { data, error } = await supabase
@@ -47,6 +47,7 @@ export function useVendorShop() {
         city: shopData.city,
         area: shopData.area,
         story: shopData.story || null,
+        established_year: shopData.established_year || null,
         owner_id: user.id,
       })
       .select()

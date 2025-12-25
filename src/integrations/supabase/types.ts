@@ -353,6 +353,7 @@ export type Database = {
           city: string
           closing_time: string | null
           created_at: string
+          established_year: number | null
           facebook_url: string | null
           google_maps_url: string | null
           gst_number: string | null
@@ -384,6 +385,7 @@ export type Database = {
           city: string
           closing_time?: string | null
           created_at?: string
+          established_year?: number | null
           facebook_url?: string | null
           google_maps_url?: string | null
           gst_number?: string | null
@@ -415,6 +417,7 @@ export type Database = {
           city?: string
           closing_time?: string | null
           created_at?: string
+          established_year?: number | null
           facebook_url?: string | null
           google_maps_url?: string | null
           gst_number?: string | null
