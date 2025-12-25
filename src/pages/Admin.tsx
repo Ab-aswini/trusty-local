@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { useAuth } from '@/hooks/useAuth';
 import { useAdminVendors } from '@/hooks/useAdminVendors';
 import { useAdminReports } from '@/hooks/useAdminReports';
+import { useAdminStats } from '@/hooks/useAdminStats';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
@@ -35,7 +36,10 @@ import {
   MapPin,
   Phone,
   FileText,
-  Shield
+  Shield,
+  TrendingUp,
+  Users,
+  Flag
 } from 'lucide-react';
 import { useState } from 'react';
 
@@ -58,6 +62,7 @@ const Admin = () => {
     resolveReport,
     dismissReport 
   } = useAdminReports();
+  const { stats, isLoading: statsLoading } = useAdminStats();
 
   const [rejectReason, setRejectReason] = useState('');
   const [resolveNotes, setResolveNotes] = useState('');
@@ -108,6 +113,37 @@ const Admin = () => {
       </header>
 
       <main className="px-4 py-4">
+        {/* Stats Overview */}
+        <div className="grid grid-cols-3 gap-3 mb-6">
+          <div className="card-soft p-4 text-center">
+            <div className="w-8 h-8 rounded-full bg-amber-100 flex items-center justify-center mx-auto mb-2">
+              <Clock className="h-4 w-4 text-amber-600" />
+            </div>
+            <p className="text-2xl font-display font-semibold text-foreground">
+              {statsLoading ? '—' : stats.pendingVendors}
+            </p>
+            <p className="text-xs text-muted-foreground">Pending</p>
+          </div>
+          <div className="card-soft p-4 text-center">
+            <div className="w-8 h-8 rounded-full bg-primary/10 flex items-center justify-center mx-auto mb-2">
+              <Users className="h-4 w-4 text-primary" />
+            </div>
+            <p className="text-2xl font-display font-semibold text-foreground">
+              {statsLoading ? '—' : stats.approvedVendors}
+            </p>
+            <p className="text-xs text-muted-foreground">Approved</p>
+          </div>
+          <div className="card-soft p-4 text-center">
+            <div className="w-8 h-8 rounded-full bg-destructive/10 flex items-center justify-center mx-auto mb-2">
+              <Flag className="h-4 w-4 text-destructive" />
+            </div>
+            <p className="text-2xl font-display font-semibold text-foreground">
+              {statsLoading ? '—' : stats.reportsThisWeek}
+            </p>
+            <p className="text-xs text-muted-foreground">Reports/wk</p>
+          </div>
+        </div>
+
         <Tabs defaultValue="vendors" className="w-full">
           <TabsList className="grid w-full grid-cols-2 mb-4">
             <TabsTrigger value="vendors" className="relative">
