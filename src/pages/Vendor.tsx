@@ -2,22 +2,30 @@ import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '@/hooks/useAuth';
 import { useVendorShop } from '@/hooks/useVendorShop';
+import { useVendorProducts } from '@/hooks/useVendorProducts';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
 import { Switch } from '@/components/ui/switch';
 import MobileLayout from '@/components/MobileLayout';
+import VendorPortfolioPreview from '@/components/VendorPortfolioPreview';
+import SharePortfolio from '@/components/SharePortfolio';
 import { 
   ArrowLeft, 
   Store, 
-  Plus, 
-  Camera, 
   Clock, 
   Eye,
-  Settings,
   Package,
-  Sparkles
+  Sparkles,
+  Share2,
+  Camera,
+  QrCode,
+  Plus,
+  ChevronRight,
+  Star,
+  Users,
+  TrendingUp
 } from 'lucide-react';
 import { toast } from '@/hooks/use-toast';
 
@@ -25,8 +33,10 @@ const Vendor = () => {
   const navigate = useNavigate();
   const { user, isLoading: authLoading } = useAuth();
   const { shop, isLoading: shopLoading, createShop, updateShop, refetch } = useVendorShop();
+  const { products, isLoading: productsLoading, refetch: refetchProducts } = useVendorProducts(shop?.id);
   
   const [isCreating, setIsCreating] = useState(false);
+  const [isShareOpen, setIsShareOpen] = useState(false);
   const [formData, setFormData] = useState({
     name: '',
     whatsapp_number: '',
@@ -70,7 +80,7 @@ const Vendor = () => {
     
     try {
       await createShop(formData);
-      toast({ title: "Shop created!", description: "Your shop is pending approval." });
+      toast({ title: "Shop created!", description: "Your digital portfolio is ready." });
       setIsCreating(false);
       refetch();
     } catch (err: any) {
@@ -122,20 +132,43 @@ const Vendor = () => {
               <ArrowLeft className="h-5 w-5" />
             </button>
             <h1 className="font-display text-xl font-semibold text-foreground">
-              Create Your Shop
+              Create Your Digital Profile
             </h1>
           </div>
         </header>
 
         <main className="px-4 py-6">
-          <div className="card-soft p-6 mb-6 bg-primary/5 border-primary/10">
-            <Store className="h-8 w-8 text-primary mb-3" />
-            <h2 className="font-display font-medium text-foreground mb-2">
-              Start Your Digital Presence
-            </h2>
-            <p className="text-sm text-muted-foreground">
-              List your shop, add products with AI-enhanced photos, and connect with local customers.
-            </p>
+          {/* Hero Section */}
+          <div className="card-soft p-6 mb-6 bg-gradient-to-br from-primary/10 via-primary/5 to-background border-primary/20">
+            <div className="flex items-center gap-4 mb-4">
+              <div className="w-14 h-14 rounded-full bg-amber-400 flex items-center justify-center">
+                <Store className="h-7 w-7 text-amber-900" />
+              </div>
+              <div>
+                <h2 className="font-display font-semibold text-foreground">
+                  Your Shop, Online
+                </h2>
+                <p className="text-sm text-muted-foreground">
+                  Create a shareable digital portfolio
+                </p>
+              </div>
+            </div>
+            
+            {/* Benefits */}
+            <div className="grid grid-cols-3 gap-2 mt-4">
+              <div className="text-center p-2 bg-background/50 rounded-xl">
+                <Camera className="h-5 w-5 mx-auto text-primary mb-1" />
+                <p className="text-xs text-muted-foreground">AI Photos</p>
+              </div>
+              <div className="text-center p-2 bg-background/50 rounded-xl">
+                <QrCode className="h-5 w-5 mx-auto text-primary mb-1" />
+                <p className="text-xs text-muted-foreground">QR Share</p>
+              </div>
+              <div className="text-center p-2 bg-background/50 rounded-xl">
+                <Star className="h-5 w-5 mx-auto text-primary mb-1" />
+                <p className="text-xs text-muted-foreground">Build Trust</p>
+              </div>
+            </div>
           </div>
 
           <form onSubmit={handleCreateShop} className="space-y-4">
@@ -146,6 +179,7 @@ const Vendor = () => {
                 placeholder="e.g., Sharma General Store"
                 value={formData.name}
                 onChange={(e) => setFormData(prev => ({ ...prev, name: e.target.value }))}
+                className="h-12"
               />
             </div>
 
@@ -156,7 +190,11 @@ const Vendor = () => {
                 placeholder="+91 98765 43210"
                 value={formData.whatsapp_number}
                 onChange={(e) => setFormData(prev => ({ ...prev, whatsapp_number: e.target.value }))}
+                className="h-12"
               />
+              <p className="text-xs text-muted-foreground">
+                Customers will contact you on this number
+              </p>
             </div>
 
             <div className="grid grid-cols-2 gap-3">
@@ -167,6 +205,7 @@ const Vendor = () => {
                   placeholder="e.g., Mumbai"
                   value={formData.city}
                   onChange={(e) => setFormData(prev => ({ ...prev, city: e.target.value }))}
+                  className="h-12"
                 />
               </div>
               <div className="space-y-2">
@@ -176,6 +215,7 @@ const Vendor = () => {
                   placeholder="e.g., Andheri West"
                   value={formData.area}
                   onChange={(e) => setFormData(prev => ({ ...prev, area: e.target.value }))}
+                  className="h-12"
                 />
               </div>
             </div>
@@ -191,8 +231,8 @@ const Vendor = () => {
               />
             </div>
 
-            <Button type="submit" className="w-full h-12" disabled={isSubmitting}>
-              {isSubmitting ? 'Creating...' : 'Create Shop'}
+            <Button type="submit" className="w-full h-14 text-lg" disabled={isSubmitting}>
+              {isSubmitting ? 'Creating...' : 'Create My Portfolio'}
             </Button>
           </form>
         </main>
@@ -200,135 +240,172 @@ const Vendor = () => {
     );
   }
 
-  // Has shop - show dashboard
+  // Has shop - show portfolio dashboard
   return (
     <MobileLayout>
+      {/* Header */}
       <header className="sticky top-0 z-40 bg-background/95 backdrop-blur border-b border-border">
         <div className="px-4 py-4 flex items-center justify-between">
           <div className="flex items-center gap-3">
             <button onClick={() => navigate('/profile')} className="p-2 -ml-2 hover:bg-muted rounded-xl transition-calm">
               <ArrowLeft className="h-5 w-5" />
             </button>
-            <h1 className="font-display text-xl font-semibold text-foreground">
-              My Shop
-            </h1>
+            <div>
+              <h1 className="font-display text-lg font-semibold text-foreground">
+                My Portfolio
+              </h1>
+              <p className="text-xs text-muted-foreground">{shop.name}</p>
+            </div>
           </div>
-          <button
-            onClick={() => navigate(`/shop/${shop.id}`)}
-            className="p-2 hover:bg-muted rounded-xl transition-calm"
-          >
-            <Eye className="h-5 w-5" />
-          </button>
+          <div className="flex items-center gap-2">
+            <button
+              onClick={() => navigate(`/shop/${shop.id}`)}
+              className="p-2 hover:bg-muted rounded-xl transition-calm"
+              aria-label="Preview"
+            >
+              <Eye className="h-5 w-5" />
+            </button>
+            <button
+              onClick={() => setIsShareOpen(true)}
+              className="p-2 hover:bg-muted rounded-xl transition-calm text-primary"
+              aria-label="Share"
+            >
+              <Share2 className="h-5 w-5" />
+            </button>
+          </div>
         </div>
       </header>
 
-      <main className="px-4 py-4 space-y-4">
-        {/* Shop Status Card */}
+      <main className="px-4 py-4 space-y-4 pb-24">
+        {/* Status & Availability */}
         <div className="card-soft p-4">
-          <div className="flex items-center justify-between mb-4">
-            <div className="flex items-center gap-3">
-              <div className="w-12 h-12 rounded-xl bg-muted overflow-hidden">
-                {shop.image_url ? (
-                  <img src={shop.image_url} alt={shop.name} className="w-full h-full object-cover" />
-                ) : (
-                  <div className="w-full h-full flex items-center justify-center text-2xl">🏪</div>
-                )}
-              </div>
-              <div>
-                <h2 className="font-display font-medium text-foreground">{shop.name}</h2>
-                <p className="text-xs text-muted-foreground">{shop.area}, {shop.city}</p>
-              </div>
+          <div className="flex items-center justify-between mb-3">
+            <div className="flex items-center gap-2">
+              <span className={`w-2 h-2 rounded-full ${
+                shop.vendor_status === 'approved' ? 'bg-green-500' : 
+                shop.vendor_status === 'pending' ? 'bg-amber-500' : 'bg-red-500'
+              }`} />
+              <span className="text-sm font-medium capitalize">{shop.vendor_status}</span>
             </div>
             
-            {/* Vendor Status Badge */}
-            <span className={`px-2 py-1 text-xs rounded-full font-medium ${
-              shop.vendor_status === 'approved' 
-                ? 'bg-green-100 text-green-700' 
-                : shop.vendor_status === 'pending'
-                ? 'bg-amber-100 text-amber-700'
-                : 'bg-red-100 text-red-700'
-            }`}>
-              {shop.vendor_status}
-            </span>
-          </div>
-
-          {/* Availability Toggle */}
-          <div className="flex items-center justify-between p-3 bg-muted/50 rounded-xl">
+            {/* Availability Toggle */}
             <div className="flex items-center gap-2">
               <Clock className="h-4 w-4 text-muted-foreground" />
-              <span className="text-sm font-medium">
-                {shop.availability_status === 'open' ? 'Open for business' : 'Currently closed'}
+              <span className="text-sm text-muted-foreground">
+                {shop.availability_status === 'open' ? 'Open' : 'Closed'}
               </span>
+              <Switch 
+                checked={shop.availability_status === 'open'} 
+                onCheckedChange={handleToggleAvailability}
+              />
             </div>
-            <Switch 
-              checked={shop.availability_status === 'open'} 
-              onCheckedChange={handleToggleAvailability}
-            />
+          </div>
+
+          {/* Quick Stats */}
+          <div className="grid grid-cols-3 gap-2 pt-3 border-t border-border">
+            <div className="text-center">
+              <div className="flex items-center justify-center gap-1">
+                <Users className="h-4 w-4 text-primary" />
+                <span className="font-semibold text-foreground">{shop.interaction_count}</span>
+              </div>
+              <p className="text-xs text-muted-foreground">Views</p>
+            </div>
+            <div className="text-center">
+              <div className="flex items-center justify-center gap-1">
+                <Star className="h-4 w-4 text-amber-500" />
+                <span className="font-semibold text-foreground">{shop.positive_tag_count}</span>
+              </div>
+              <p className="text-xs text-muted-foreground">Ratings</p>
+            </div>
+            <div className="text-center">
+              <div className="flex items-center justify-center gap-1">
+                <TrendingUp className="h-4 w-4 text-green-500" />
+                <span className="font-semibold text-foreground capitalize">{shop.trust_state}</span>
+              </div>
+              <p className="text-xs text-muted-foreground">Trust</p>
+            </div>
           </div>
         </div>
 
-        {/* Quick Stats */}
-        <div className="grid grid-cols-3 gap-3">
-          <div className="card-soft p-4 text-center">
-            <p className="text-2xl font-display font-semibold text-primary">
-              {shop.interaction_count}
-            </p>
-            <p className="text-xs text-muted-foreground">Interactions</p>
+        {/* Portfolio Preview */}
+        <div>
+          <div className="flex items-center justify-between mb-3">
+            <h2 className="font-display font-medium text-foreground">Your Portfolio</h2>
+            <button 
+              onClick={() => setIsShareOpen(true)}
+              className="flex items-center gap-1 text-sm text-primary"
+            >
+              <QrCode className="h-4 w-4" />
+              Get QR
+            </button>
           </div>
-          <div className="card-soft p-4 text-center">
-            <p className="text-2xl font-display font-semibold text-primary">
-              {shop.positive_tag_count}
-            </p>
-            <p className="text-xs text-muted-foreground">Positive Tags</p>
-          </div>
-          <div className="card-soft p-4 text-center">
-            <p className="text-lg font-display font-semibold text-primary capitalize">
-              {shop.trust_state}
-            </p>
-            <p className="text-xs text-muted-foreground">Trust Level</p>
-          </div>
+          
+          <VendorPortfolioPreview shop={shop} products={products} />
         </div>
 
         {/* Quick Actions */}
         <div className="space-y-2">
+          <h2 className="font-display font-medium text-foreground">Manage</h2>
+          
+          {/* Add Products */}
           <button
             onClick={() => navigate('/vendor/products')}
             className="card-soft p-4 w-full flex items-center gap-3 hover:shadow-elevated transition-calm"
           >
-            <div className="w-10 h-10 rounded-full bg-primary/10 flex items-center justify-center">
-              <Package className="h-5 w-5 text-primary" />
+            <div className="w-12 h-12 rounded-full bg-primary/10 flex items-center justify-center">
+              <Package className="h-6 w-6 text-primary" />
             </div>
             <div className="flex-1 text-left">
-              <h3 className="font-medium text-sm">Manage Products</h3>
-              <p className="text-xs text-muted-foreground">Add, edit, or remove products</p>
+              <h3 className="font-medium text-foreground">Products & Services</h3>
+              <p className="text-sm text-muted-foreground">
+                {products.length > 0 
+                  ? `${products.length} items • Add more`
+                  : 'Add your first product'}
+              </p>
             </div>
+            <ChevronRight className="h-5 w-5 text-muted-foreground" />
           </button>
 
+          {/* AI Studio */}
           <button
             onClick={() => navigate('/vendor/ai-studio')}
-            className="card-soft p-4 w-full flex items-center gap-3 hover:shadow-elevated transition-calm"
+            className="card-soft p-4 w-full flex items-center gap-3 hover:shadow-elevated transition-calm bg-gradient-to-r from-primary/5 to-transparent"
           >
-            <div className="w-10 h-10 rounded-full bg-primary/10 flex items-center justify-center">
-              <Sparkles className="h-5 w-5 text-primary" />
+            <div className="w-12 h-12 rounded-full bg-gradient-to-br from-primary to-primary/60 flex items-center justify-center">
+              <Sparkles className="h-6 w-6 text-primary-foreground" />
             </div>
             <div className="flex-1 text-left">
-              <h3 className="font-medium text-sm">AI Studio</h3>
-              <p className="text-xs text-muted-foreground">Enhance product photos & descriptions</p>
+              <h3 className="font-medium text-foreground">AI Photo Studio</h3>
+              <p className="text-sm text-muted-foreground">
+                Enhance photos & generate descriptions
+              </p>
             </div>
+            <ChevronRight className="h-5 w-5 text-muted-foreground" />
           </button>
+        </div>
 
-          <button
-            onClick={() => navigate('/vendor/settings')}
-            className="card-soft p-4 w-full flex items-center gap-3 hover:shadow-elevated transition-calm"
-          >
-            <div className="w-10 h-10 rounded-full bg-muted flex items-center justify-center">
-              <Settings className="h-5 w-5 text-muted-foreground" />
+        {/* Share Tips */}
+        <div className="card-soft p-4 bg-amber-50 dark:bg-amber-950/20 border-amber-200 dark:border-amber-800/30">
+          <div className="flex items-start gap-3">
+            <div className="w-10 h-10 rounded-full bg-amber-400 flex items-center justify-center shrink-0">
+              <Share2 className="h-5 w-5 text-amber-900" />
             </div>
-            <div className="flex-1 text-left">
-              <h3 className="font-medium text-sm">Shop Settings</h3>
-              <p className="text-xs text-muted-foreground">Update shop details & verification</p>
+            <div>
+              <h3 className="font-medium text-foreground mb-1">Grow Your Reach</h3>
+              <p className="text-sm text-muted-foreground">
+                Share your portfolio QR on visiting cards, shop counter, and WhatsApp status to get more customers.
+              </p>
+              <Button
+                variant="outline"
+                size="sm"
+                className="mt-3"
+                onClick={() => setIsShareOpen(true)}
+              >
+                <QrCode className="h-4 w-4 mr-2" />
+                Get Shareable QR
+              </Button>
             </div>
-          </button>
+          </div>
         </div>
 
         {/* Warning if any */}
@@ -340,6 +417,13 @@ const Vendor = () => {
           </div>
         )}
       </main>
+
+      {/* Share Modal */}
+      <SharePortfolio 
+        shop={shop} 
+        isOpen={isShareOpen} 
+        onClose={() => setIsShareOpen(false)} 
+      />
     </MobileLayout>
   );
 };
