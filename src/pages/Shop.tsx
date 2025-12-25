@@ -280,7 +280,11 @@ const Shop = () => {
               ))}
             </div>
           ) : (
-            <ProductGallery products={products} />
+            <ProductGallery 
+              products={products} 
+              shopName={shop.name}
+              whatsappNumber={shop.whatsapp_number}
+            />
           )}
         </div>
 
