@@ -1,4 +1,4 @@
-import { User, Settings, Store, LogOut, ChevronRight, Shield, Bell, HelpCircle } from 'lucide-react';
+import { User, Settings, Store, LogOut, ChevronRight, Shield, Bell, HelpCircle, ShieldCheck } from 'lucide-react';
 import { useAuth } from '@/hooks/useAuth';
 import { Button } from '@/components/ui/button';
 import MobileLayout from '@/components/MobileLayout';
@@ -6,7 +6,7 @@ import { Link, useNavigate } from 'react-router-dom';
 
 const Profile = () => {
   const navigate = useNavigate();
-  const { user, signOut, isLoading } = useAuth();
+  const { user, signOut, isLoading, isAdmin } = useAuth();
 
   if (isLoading) {
     return (
@@ -109,6 +109,23 @@ const Profile = () => {
             <p className="text-xs text-muted-foreground">Visits</p>
           </div>
         </div>
+
+        {/* Admin Link */}
+        {isAdmin && (
+          <Link
+            to="/admin"
+            className="card-soft p-4 flex items-center gap-3 hover:shadow-elevated transition-calm mb-2 border-2 border-primary/20"
+          >
+            <div className="w-10 h-10 rounded-full bg-primary/20 flex items-center justify-center">
+              <ShieldCheck className="h-5 w-5 text-primary" />
+            </div>
+            <div className="flex-1">
+              <h3 className="font-medium text-sm text-foreground">Admin Dashboard</h3>
+              <p className="text-xs text-muted-foreground">Manage vendors & reports</p>
+            </div>
+            <ChevronRight className="h-5 w-5 text-primary" />
+          </Link>
+        )}
 
         {/* Menu Items */}
         <div className="space-y-2">

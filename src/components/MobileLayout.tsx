@@ -3,13 +3,14 @@ import BottomNav from './BottomNav';
 
 interface MobileLayoutProps {
   children: ReactNode;
+  showNav?: boolean;
 }
 
-const MobileLayout = ({ children }: MobileLayoutProps) => {
+const MobileLayout = ({ children, showNav = true }: MobileLayoutProps) => {
   return (
-    <div className="min-h-screen bg-background pb-20">
+    <div className={`min-h-screen bg-background ${showNav ? 'pb-20' : ''}`}>
       {children}
-      <BottomNav />
+      {showNav && <BottomNav />}
     </div>
   );
 };
