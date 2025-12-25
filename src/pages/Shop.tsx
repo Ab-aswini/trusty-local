@@ -19,7 +19,9 @@ import {
   AlertTriangle,
   Phone,
   CheckCircle,
-  ExternalLink
+  ExternalLink,
+  Instagram,
+  Facebook
 } from 'lucide-react';
 import { toast } from '@/hooks/use-toast';
 
@@ -288,10 +290,12 @@ const Shop = () => {
           )}
         </div>
 
-        {/* Contact Info */}
+        {/* Contact & Social Links */}
         <div className="card-soft p-4">
           <h2 className="font-display font-medium text-foreground mb-3">Contact</h2>
-          <div className="flex items-center gap-3">
+          
+          {/* WhatsApp */}
+          <div className="flex items-center gap-3 mb-4">
             <div className="w-10 h-10 rounded-full bg-[#25D366]/10 flex items-center justify-center">
               <Phone className="h-5 w-5 text-[#25D366]" />
             </div>
@@ -300,6 +304,45 @@ const Shop = () => {
               <p className="text-xs text-muted-foreground">WhatsApp available</p>
             </div>
           </div>
+
+          {/* Social Links */}
+          {(shop.instagram_url || shop.facebook_url || shop.google_maps_url) && (
+            <div className="pt-3 border-t border-border">
+              <p className="text-xs text-muted-foreground mb-3">Follow & Find Us</p>
+              <div className="flex gap-2">
+                {shop.instagram_url && (
+                  <a
+                    href={shop.instagram_url}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="w-10 h-10 rounded-full bg-gradient-to-br from-purple-500 via-pink-500 to-orange-400 flex items-center justify-center hover:scale-105 transition-transform"
+                  >
+                    <Instagram className="h-5 w-5 text-white" />
+                  </a>
+                )}
+                {shop.facebook_url && (
+                  <a
+                    href={shop.facebook_url}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="w-10 h-10 rounded-full bg-blue-600 flex items-center justify-center hover:scale-105 transition-transform"
+                  >
+                    <Facebook className="h-5 w-5 text-white" />
+                  </a>
+                )}
+                {shop.google_maps_url && (
+                  <a
+                    href={shop.google_maps_url}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="w-10 h-10 rounded-full bg-red-500 flex items-center justify-center hover:scale-105 transition-transform"
+                  >
+                    <MapPin className="h-5 w-5 text-white" />
+                  </a>
+                )}
+              </div>
+            </div>
+          )}
         </div>
 
         {/* Report Link */}
