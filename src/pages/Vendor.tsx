@@ -11,6 +11,7 @@ import { Switch } from '@/components/ui/switch';
 import MobileLayout from '@/components/MobileLayout';
 import VendorPortfolioPreview from '@/components/VendorPortfolioPreview';
 import SharePortfolio from '@/components/SharePortfolio';
+import ShopImageUpload from '@/components/ShopImageUpload';
 import { 
   ArrowLeft, 
   Store, 
@@ -21,7 +22,6 @@ import {
   Share2,
   Camera,
   QrCode,
-  Plus,
   ChevronRight,
   Star,
   Users,
@@ -277,53 +277,65 @@ const Vendor = () => {
       </header>
 
       <main className="px-4 py-4 space-y-4 pb-24">
-        {/* Status & Availability */}
+        {/* Shop Identity Card with Image Upload */}
         <div className="card-soft p-4">
-          <div className="flex items-center justify-between mb-3">
-            <div className="flex items-center gap-2">
-              <span className={`w-2 h-2 rounded-full ${
-                shop.vendor_status === 'approved' ? 'bg-green-500' : 
-                shop.vendor_status === 'pending' ? 'bg-amber-500' : 'bg-red-500'
-              }`} />
-              <span className="text-sm font-medium capitalize">{shop.vendor_status}</span>
-            </div>
-            
-            {/* Availability Toggle */}
-            <div className="flex items-center gap-2">
-              <Clock className="h-4 w-4 text-muted-foreground" />
-              <span className="text-sm text-muted-foreground">
-                {shop.availability_status === 'open' ? 'Open' : 'Closed'}
-              </span>
-              <Switch 
-                checked={shop.availability_status === 'open'} 
-                onCheckedChange={handleToggleAvailability}
-              />
+          <div className="flex items-center gap-4 mb-4">
+            <ShopImageUpload
+              shopId={shop.id}
+              currentImage={shop.image_url}
+              shopName={shop.name}
+              onImageUpdated={(url) => refetch()}
+            />
+            <div className="flex-1">
+              <h2 className="font-display font-semibold text-foreground">{shop.name}</h2>
+              <p className="text-sm text-muted-foreground">{shop.area}, {shop.city}</p>
+              <div className="flex items-center gap-2 mt-1">
+                <span className={`w-2 h-2 rounded-full ${
+                  shop.vendor_status === 'approved' ? 'bg-green-500' : 
+                  shop.vendor_status === 'pending' ? 'bg-amber-500' : 'bg-red-500'
+                }`} />
+                <span className="text-xs text-muted-foreground capitalize">{shop.vendor_status}</span>
+              </div>
             </div>
           </div>
+          
+          {/* Availability Toggle */}
+          <div className="flex items-center justify-between p-3 bg-muted/50 rounded-xl">
+            <div className="flex items-center gap-2">
+              <Clock className="h-4 w-4 text-muted-foreground" />
+              <span className="text-sm font-medium">
+                {shop.availability_status === 'open' ? 'Open for business' : 'Currently closed'}
+              </span>
+            </div>
+            <Switch 
+              checked={shop.availability_status === 'open'} 
+              onCheckedChange={handleToggleAvailability}
+            />
+          </div>
+        </div>
 
-          {/* Quick Stats */}
-          <div className="grid grid-cols-3 gap-2 pt-3 border-t border-border">
-            <div className="text-center">
-              <div className="flex items-center justify-center gap-1">
-                <Users className="h-4 w-4 text-primary" />
-                <span className="font-semibold text-foreground">{shop.interaction_count}</span>
-              </div>
-              <p className="text-xs text-muted-foreground">Views</p>
+        {/* Quick Stats */}
+        <div className="grid grid-cols-3 gap-3">
+          <div className="card-soft p-3 text-center">
+            <div className="flex items-center justify-center gap-1">
+              <Users className="h-4 w-4 text-primary" />
+              <span className="font-semibold text-foreground">{shop.interaction_count}</span>
             </div>
-            <div className="text-center">
-              <div className="flex items-center justify-center gap-1">
-                <Star className="h-4 w-4 text-amber-500" />
-                <span className="font-semibold text-foreground">{shop.positive_tag_count}</span>
-              </div>
-              <p className="text-xs text-muted-foreground">Ratings</p>
+            <p className="text-xs text-muted-foreground">Views</p>
+          </div>
+          <div className="card-soft p-3 text-center">
+            <div className="flex items-center justify-center gap-1">
+              <Star className="h-4 w-4 text-amber-500" />
+              <span className="font-semibold text-foreground">{shop.positive_tag_count}</span>
             </div>
-            <div className="text-center">
-              <div className="flex items-center justify-center gap-1">
-                <TrendingUp className="h-4 w-4 text-green-500" />
-                <span className="font-semibold text-foreground capitalize">{shop.trust_state}</span>
-              </div>
-              <p className="text-xs text-muted-foreground">Trust</p>
+            <p className="text-xs text-muted-foreground">Ratings</p>
+          </div>
+          <div className="card-soft p-3 text-center">
+            <div className="flex items-center justify-center gap-1">
+              <TrendingUp className="h-4 w-4 text-green-500" />
+              <span className="font-semibold text-foreground capitalize">{shop.trust_state}</span>
             </div>
+            <p className="text-xs text-muted-foreground">Trust</p>
           </div>
         </div>
 
