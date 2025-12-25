@@ -76,6 +76,7 @@ export interface Product {
   shop_id: string;
   name: string;
   description: string | null;
+  category: string | null;
   image_url: string | null;
   price_type: PriceType;
   price_fixed: number | null;

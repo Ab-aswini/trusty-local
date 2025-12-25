@@ -29,6 +29,7 @@ const VendorProducts = () => {
   const [formData, setFormData] = useState({
     name: '',
     description: '',
+    category: '',
     price_type: 'enquiry' as 'fixed' | 'range' | 'discount' | 'enquiry',
     price_fixed: '',
     price_min: '',
@@ -41,6 +42,7 @@ const VendorProducts = () => {
     setFormData({
       name: '',
       description: '',
+      category: '',
       price_type: 'enquiry',
       price_fixed: '',
       price_min: '',
@@ -61,6 +63,7 @@ const VendorProducts = () => {
     setFormData({
       name: product.name,
       description: product.description || '',
+      category: product.category || '',
       price_type: product.price_type,
       price_fixed: product.price_fixed?.toString() || '',
       price_min: product.price_min?.toString() || '',
@@ -86,6 +89,7 @@ const VendorProducts = () => {
       const productData = {
         name: formData.name,
         description: formData.description || null,
+        category: formData.category || null,
         price_type: formData.price_type,
         price_fixed: formData.price_fixed ? parseFloat(formData.price_fixed) : null,
         price_min: formData.price_min ? parseFloat(formData.price_min) : null,
@@ -262,6 +266,16 @@ const VendorProducts = () => {
                 value={formData.description}
                 onChange={(e) => setFormData(prev => ({ ...prev, description: e.target.value }))}
                 rows={2}
+              />
+            </div>
+
+            <div className="space-y-2">
+              <Label htmlFor="category">Category</Label>
+              <Input
+                id="category"
+                placeholder="e.g., Rice, Pulses, Spices"
+                value={formData.category}
+                onChange={(e) => setFormData(prev => ({ ...prev, category: e.target.value }))}
               />
             </div>
 

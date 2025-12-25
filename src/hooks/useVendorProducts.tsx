@@ -72,6 +72,7 @@ export function useVendorProducts(shopId: string | undefined) {
     name: string;
     shop_id: string;
     description?: string | null;
+    category?: string | null;
     price_type?: 'fixed' | 'range' | 'discount' | 'enquiry';
     price_fixed?: number | null;
     price_min?: number | null;
@@ -85,6 +86,7 @@ export function useVendorProducts(shopId: string | undefined) {
         name: productData.name,
         shop_id: productData.shop_id,
         description: productData.description,
+        category: productData.category,
         price_type: productData.price_type || 'enquiry',
         price_fixed: productData.price_fixed,
         price_min: productData.price_min,
