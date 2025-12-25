@@ -138,27 +138,28 @@ export function useCategories() {
   const [categories, setCategories] = useState<Category[]>([]);
   const [isLoading, setIsLoading] = useState(true);
 
-  useEffect(() => {
-    const fetchCategories = async () => {
-      try {
-        const { data, error } = await supabase
-          .from('categories')
-          .select('*')
-          .or('is_system.eq.true,approved.eq.true')
-          .is('parent_id', null)
-          .order('name');
+  const fetchCategories = useCallback(async () => {
+    try {
+      setIsLoading(true);
+      const { data, error } = await supabase
+        .from('categories')
+        .select('*')
+        .or('is_system.eq.true,approved.eq.true')
+        .is('parent_id', null)
+        .order('name');
 
-        if (error) throw error;
-        setCategories((data || []) as Category[]);
-      } catch (err) {
-        console.error('Error fetching categories:', err);
-      } finally {
-        setIsLoading(false);
-      }
-    };
-
-    fetchCategories();
+      if (error) throw error;
+      setCategories((data || []) as Category[]);
+    } catch (err) {
+      console.error('Error fetching categories:', err);
+    } finally {
+      setIsLoading(false);
+    }
   }, []);
 
-  return { categories, isLoading };
+  useEffect(() => {
+    fetchCategories();
+  }, [fetchCategories]);
+
+  return { categories, isLoading, refetch: fetchCategories };
 }

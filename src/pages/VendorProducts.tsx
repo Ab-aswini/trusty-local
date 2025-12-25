@@ -1,4 +1,4 @@
-import { useState, useRef } from 'react';
+import { useState, useRef, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '@/hooks/useAuth';
 import { useVendorShop } from '@/hooks/useVendorShop';
@@ -14,9 +14,8 @@ import MobileLayout from '@/components/MobileLayout';
 import ProductMultiImageUpload from '@/components/ProductMultiImageUpload';
 import BulkProductImport from '@/components/BulkProductImport';
 import ProductImageCarousel from '@/components/ProductImageCarousel';
-import { ArrowLeft, Plus, Trash2, Edit, Sparkles, Images, Camera, X
-
- } from 'lucide-react';
+import PullToRefresh from '@/components/PullToRefresh';
+import { ArrowLeft, Plus, Trash2, Edit, Sparkles, Images, Camera, X } from 'lucide-react';
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from '@/hooks/use-toast';
 import { Product } from '@/types/database';
@@ -214,6 +213,11 @@ const VendorProducts = () => {
     }
   };
 
+  const handleRefresh = useCallback(async () => {
+    await refetch();
+    toast({ title: "Refreshed!", variant: "default" });
+  }, [refetch]);
+
   if (!shop) {
     return (
       <MobileLayout>
@@ -249,7 +253,8 @@ const VendorProducts = () => {
         </div>
       </header>
 
-      <main className="px-4 py-4">
+      <PullToRefresh onRefresh={handleRefresh} className="flex-1">
+        <main className="px-4 py-4">
         {isLoading ? (
           <div className="space-y-3">
             {[...Array(3)].map((_, i) => (
@@ -337,7 +342,8 @@ const VendorProducts = () => {
             <p className="text-xs text-muted-foreground">Get professional photos & descriptions</p>
           </div>
         </button>
-      </main>
+        </main>
+      </PullToRefresh>
 
       {/* Product Dialog */}
       <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
