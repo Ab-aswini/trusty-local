@@ -15,6 +15,7 @@ interface BulkProductImportProps {
 interface ParsedProduct {
   name: string;
   description?: string;
+  category?: string;
   price_type: 'fixed' | 'range' | 'discount' | 'enquiry';
   price_fixed?: number;
   price_min?: number;
@@ -88,6 +89,7 @@ const BulkProductImport = ({ shopId, onImportComplete }: BulkProductImportProps)
     const headers = data[0].map((h: any) => String(h).toLowerCase().trim());
     const nameIdx = headers.findIndex((h: string) => h === 'name' || h === 'product name' || h === 'product');
     const descIdx = headers.findIndex((h: string) => h === 'description' || h === 'desc');
+    const categoryIdx = headers.findIndex((h: string) => h === 'category' || h === 'type' || h === 'group');
     const priceIdx = headers.findIndex((h: string) => h === 'price' || h === 'mrp' || h === 'rate');
     const priceTypeIdx = headers.findIndex((h: string) => h === 'price type' || h === 'pricing');
     const minPriceIdx = headers.findIndex((h: string) => h === 'min price' || h === 'price min');
@@ -98,6 +100,7 @@ const BulkProductImport = ({ shopId, onImportComplete }: BulkProductImportProps)
     return data.slice(1).map((row, idx) => {
       const name = nameIdx >= 0 ? String(row[nameIdx] || '').trim() : '';
       const description = descIdx >= 0 ? String(row[descIdx] || '').trim() : undefined;
+      const category = categoryIdx >= 0 ? String(row[categoryIdx] || '').trim() : undefined;
       const priceTypeRaw = priceTypeIdx >= 0 ? String(row[priceTypeIdx] || '').toLowerCase().trim() : '';
       
       let price_type: 'fixed' | 'range' | 'discount' | 'enquiry' = 'enquiry';
@@ -126,6 +129,7 @@ const BulkProductImport = ({ shopId, onImportComplete }: BulkProductImportProps)
       return {
         name,
         description: description?.slice(0, 500),
+        category: category?.slice(0, 50),
         price_type,
         price_fixed,
         price_min,
@@ -163,6 +167,7 @@ const BulkProductImport = ({ shopId, onImportComplete }: BulkProductImportProps)
         shop_id: shopId,
         name: p.name,
         description: p.description || null,
+        category: p.category || null,
         price_type: p.price_type,
         price_fixed: p.price_fixed || null,
         price_min: p.price_min || null,
@@ -269,7 +274,7 @@ const BulkProductImport = ({ shopId, onImportComplete }: BulkProductImportProps)
 
             <div className="bg-muted/50 p-3 rounded-lg text-xs text-muted-foreground">
               <p className="font-medium mb-1">Expected columns:</p>
-              <p>Name (required), Description, Price, Price Type (fixed/range/discount/enquiry), Min Price, Max Price, Original Price, Discounted Price</p>
+              <p>Name (required), Description, Category, Price, Price Type (fixed/range/discount/enquiry), Min Price, Max Price, Original Price, Discounted Price</p>
             </div>
 
             <div className="flex gap-3">

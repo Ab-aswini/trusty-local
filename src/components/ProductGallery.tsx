@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useMemo } from 'react';
 import { X, ChevronLeft, ChevronRight, MessageCircle } from 'lucide-react';
 import { Product } from '@/types/database';
 import { Button } from '@/components/ui/button';
@@ -26,6 +26,21 @@ const formatPrice = (product: Product): string => {
 const ProductGallery = ({ products, shopName, whatsappNumber, onProductInquiry }: ProductGalleryProps) => {
   const [selectedProduct, setSelectedProduct] = useState<Product | null>(null);
   const [currentIndex, setCurrentIndex] = useState(0);
+  const [selectedCategory, setSelectedCategory] = useState<string | null>(null);
+
+  // Get unique categories from products
+  const categories = useMemo(() => {
+    const cats = products
+      .map(p => p.category)
+      .filter((c): c is string => c !== null && c.trim() !== '');
+    return [...new Set(cats)].sort();
+  }, [products]);
+
+  // Filter products by selected category
+  const filteredProducts = useMemo(() => {
+    if (!selectedCategory) return products;
+    return products.filter(p => p.category === selectedCategory);
+  }, [products, selectedCategory]);
 
   const openLightbox = (product: Product, index: number) => {
     setSelectedProduct(product);
@@ -37,15 +52,15 @@ const ProductGallery = ({ products, shopName, whatsappNumber, onProductInquiry }
   };
 
   const goToPrevious = () => {
-    const newIndex = currentIndex === 0 ? products.length - 1 : currentIndex - 1;
+    const newIndex = currentIndex === 0 ? filteredProducts.length - 1 : currentIndex - 1;
     setCurrentIndex(newIndex);
-    setSelectedProduct(products[newIndex]);
+    setSelectedProduct(filteredProducts[newIndex]);
   };
 
   const goToNext = () => {
-    const newIndex = currentIndex === products.length - 1 ? 0 : currentIndex + 1;
+    const newIndex = currentIndex === filteredProducts.length - 1 ? 0 : currentIndex + 1;
     setCurrentIndex(newIndex);
-    setSelectedProduct(products[newIndex]);
+    setSelectedProduct(filteredProducts[newIndex]);
   };
 
   const handleProductInquiry = (product: Product, e?: React.MouseEvent) => {
@@ -73,9 +88,38 @@ const ProductGallery = ({ products, shopName, whatsappNumber, onProductInquiry }
 
   return (
     <>
+      {/* Category Filter */}
+      {categories.length > 0 && (
+        <div className="flex gap-2 mb-4 overflow-x-auto pb-2 scrollbar-hide">
+          <button
+            onClick={() => setSelectedCategory(null)}
+            className={`px-3 py-1.5 rounded-full text-sm font-medium whitespace-nowrap transition-calm ${
+              selectedCategory === null
+                ? 'bg-primary text-primary-foreground'
+                : 'bg-muted text-muted-foreground hover:bg-muted/80'
+            }`}
+          >
+            All ({products.length})
+          </button>
+          {categories.map(category => (
+            <button
+              key={category}
+              onClick={() => setSelectedCategory(category)}
+              className={`px-3 py-1.5 rounded-full text-sm font-medium whitespace-nowrap transition-calm ${
+                selectedCategory === category
+                  ? 'bg-primary text-primary-foreground'
+                  : 'bg-muted text-muted-foreground hover:bg-muted/80'
+              }`}
+            >
+              {category} ({products.filter(p => p.category === category).length})
+            </button>
+          ))}
+        </div>
+      )}
+
       {/* Product Grid */}
       <div className="grid grid-cols-2 gap-3">
-        {products.map((product, index) => (
+        {filteredProducts.map((product, index) => (
           <div 
             key={product.id} 
             className="card-soft overflow-hidden group"
@@ -153,7 +197,7 @@ const ProductGallery = ({ products, shopName, whatsappNumber, onProductInquiry }
           </button>
 
           {/* Navigation */}
-          {products.length > 1 && (
+          {filteredProducts.length > 1 && (
             <>
               <button 
                 className="absolute left-4 top-1/2 -translate-y-1/2 w-12 h-12 rounded-full bg-white/10 flex items-center justify-center text-white hover:bg-white/20 transition-calm"
@@ -224,7 +268,7 @@ const ProductGallery = ({ products, shopName, whatsappNumber, onProductInquiry }
               
               {/* Counter */}
               <p className="text-xs text-muted-foreground mt-3 text-center">
-                {currentIndex + 1} of {products.length}
+                {currentIndex + 1} of {filteredProducts.length}
               </p>
             </div>
           </div>
