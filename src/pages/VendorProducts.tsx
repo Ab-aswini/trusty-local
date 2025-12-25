@@ -341,7 +341,7 @@ const VendorProducts = () => {
 
       {/* Product Dialog */}
       <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
-        <DialogContent className="max-w-md mx-4">
+        <DialogContent className="w-[calc(100%-2rem)] sm:max-w-md max-h-[85vh]">
           <DialogHeader>
             <DialogTitle>{editingProduct ? 'Edit Product' : 'Add Product'}</DialogTitle>
           </DialogHeader>
@@ -535,7 +535,7 @@ const VendorProducts = () => {
 
       {/* Image Management Dialog */}
       <Dialog open={!!imageDialogProduct} onOpenChange={(open) => !open && setImageDialogProduct(null)}>
-        <DialogContent className="max-w-md mx-4">
+        <DialogContent className="w-[calc(100%-2rem)] sm:max-w-md max-h-[85vh]">
           <DialogHeader>
             <DialogTitle className="flex items-center gap-2">
               <Images className="h-5 w-5" />
