@@ -61,6 +61,9 @@ export interface Shop {
   ai_usage_count: number;
   ai_usage_reset_at: string | null;
   is_premium: boolean;
+  instagram_url: string | null;
+  facebook_url: string | null;
+  google_maps_url: string | null;
   created_at: string;
   updated_at: string;
   // Joined fields

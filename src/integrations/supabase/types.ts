@@ -353,9 +353,12 @@ export type Database = {
           city: string
           closing_time: string | null
           created_at: string
+          facebook_url: string | null
+          google_maps_url: string | null
           gst_number: string | null
           id: string
           image_url: string | null
+          instagram_url: string | null
           interaction_count: number
           is_premium: boolean
           name: string
@@ -381,9 +384,12 @@ export type Database = {
           city: string
           closing_time?: string | null
           created_at?: string
+          facebook_url?: string | null
+          google_maps_url?: string | null
           gst_number?: string | null
           id?: string
           image_url?: string | null
+          instagram_url?: string | null
           interaction_count?: number
           is_premium?: boolean
           name: string
@@ -409,9 +415,12 @@ export type Database = {
           city?: string
           closing_time?: string | null
           created_at?: string
+          facebook_url?: string | null
+          google_maps_url?: string | null
           gst_number?: string | null
           id?: string
           image_url?: string | null
+          instagram_url?: string | null
           interaction_count?: number
           is_premium?: boolean
           name?: string

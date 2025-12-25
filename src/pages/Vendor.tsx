@@ -12,6 +12,7 @@ import MobileLayout from '@/components/MobileLayout';
 import VendorPortfolioPreview from '@/components/VendorPortfolioPreview';
 import SharePortfolio from '@/components/SharePortfolio';
 import ShopImageUpload from '@/components/ShopImageUpload';
+import SocialLinksEditor from '@/components/SocialLinksEditor';
 import { 
   ArrowLeft, 
   Store, 
@@ -25,7 +26,8 @@ import {
   ChevronRight,
   Star,
   Users,
-  TrendingUp
+  TrendingUp,
+  Link2
 } from 'lucide-react';
 import { toast } from '@/hooks/use-toast';
 
@@ -37,6 +39,7 @@ const Vendor = () => {
   
   const [isCreating, setIsCreating] = useState(false);
   const [isShareOpen, setIsShareOpen] = useState(false);
+  const [isSocialLinksOpen, setIsSocialLinksOpen] = useState(false);
   const [formData, setFormData] = useState({
     name: '',
     whatsapp_number: '',
@@ -378,6 +381,25 @@ const Vendor = () => {
             <ChevronRight className="h-5 w-5 text-muted-foreground" />
           </button>
 
+          {/* Social Links */}
+          <button
+            onClick={() => setIsSocialLinksOpen(true)}
+            className="card-soft p-4 w-full flex items-center gap-3 hover:shadow-elevated transition-calm"
+          >
+            <div className="w-12 h-12 rounded-full bg-gradient-to-br from-purple-500 via-pink-500 to-orange-400 flex items-center justify-center">
+              <Link2 className="h-6 w-6 text-white" />
+            </div>
+            <div className="flex-1 text-left">
+              <h3 className="font-medium text-foreground">Social Links</h3>
+              <p className="text-sm text-muted-foreground">
+                {(shop.instagram_url || shop.facebook_url || shop.google_maps_url)
+                  ? 'Instagram, Facebook, Maps'
+                  : 'Add your social profiles'}
+              </p>
+            </div>
+            <ChevronRight className="h-5 w-5 text-muted-foreground" />
+          </button>
+
           {/* AI Studio */}
           <button
             onClick={() => navigate('/vendor/ai-studio')}
@@ -435,6 +457,14 @@ const Vendor = () => {
         shop={shop} 
         isOpen={isShareOpen} 
         onClose={() => setIsShareOpen(false)} 
+      />
+
+      {/* Social Links Modal */}
+      <SocialLinksEditor
+        shop={shop}
+        isOpen={isSocialLinksOpen}
+        onClose={() => setIsSocialLinksOpen(false)}
+        onUpdated={() => refetch()}
       />
     </MobileLayout>
   );

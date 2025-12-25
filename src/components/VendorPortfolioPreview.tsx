@@ -4,8 +4,9 @@ import {
   Phone, 
   MessageCircle, 
   Star,
-  Shield,
-  Clock
+  Instagram,
+  Facebook,
+  ExternalLink
 } from 'lucide-react';
 
 interface VendorPortfolioPreviewProps {
@@ -107,20 +108,65 @@ const VendorPortfolioPreview = ({ shop, products }: VendorPortfolioPreviewProps)
         </div>
       </div>
 
-      {/* Social Links Placeholder */}
+      {/* Social Links */}
       <div className="px-4 pb-4 flex justify-center gap-2">
-        <div className="w-10 h-10 rounded-full bg-[#25D366] flex items-center justify-center">
+        {/* WhatsApp - always show */}
+        <a
+          href={`https://wa.me/${shop.whatsapp_number.replace(/\D/g, '')}`}
+          target="_blank"
+          rel="noopener noreferrer"
+          className="w-10 h-10 rounded-full bg-[#25D366] flex items-center justify-center hover:scale-105 transition-transform"
+        >
           <MessageCircle className="h-5 w-5 text-white" />
-        </div>
-        <div className="w-10 h-10 rounded-full bg-gradient-to-br from-purple-500 via-pink-500 to-orange-400 flex items-center justify-center">
-          <span className="text-white text-xs font-bold">IG</span>
-        </div>
-        <div className="w-10 h-10 rounded-full bg-blue-600 flex items-center justify-center">
-          <span className="text-white text-xs font-bold">f</span>
-        </div>
-        <div className="w-10 h-10 rounded-full bg-red-500 flex items-center justify-center">
-          <MapPin className="h-5 w-5 text-white" />
-        </div>
+        </a>
+        
+        {/* Instagram */}
+        {shop.instagram_url ? (
+          <a
+            href={shop.instagram_url}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="w-10 h-10 rounded-full bg-gradient-to-br from-purple-500 via-pink-500 to-orange-400 flex items-center justify-center hover:scale-105 transition-transform"
+          >
+            <Instagram className="h-5 w-5 text-white" />
+          </a>
+        ) : (
+          <div className="w-10 h-10 rounded-full bg-muted flex items-center justify-center opacity-40">
+            <Instagram className="h-5 w-5 text-muted-foreground" />
+          </div>
+        )}
+        
+        {/* Facebook */}
+        {shop.facebook_url ? (
+          <a
+            href={shop.facebook_url}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="w-10 h-10 rounded-full bg-blue-600 flex items-center justify-center hover:scale-105 transition-transform"
+          >
+            <Facebook className="h-5 w-5 text-white" />
+          </a>
+        ) : (
+          <div className="w-10 h-10 rounded-full bg-muted flex items-center justify-center opacity-40">
+            <Facebook className="h-5 w-5 text-muted-foreground" />
+          </div>
+        )}
+        
+        {/* Google Maps */}
+        {shop.google_maps_url ? (
+          <a
+            href={shop.google_maps_url}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="w-10 h-10 rounded-full bg-red-500 flex items-center justify-center hover:scale-105 transition-transform"
+          >
+            <MapPin className="h-5 w-5 text-white" />
+          </a>
+        ) : (
+          <div className="w-10 h-10 rounded-full bg-muted flex items-center justify-center opacity-40">
+            <MapPin className="h-5 w-5 text-muted-foreground" />
+          </div>
+        )}
       </div>
 
       {/* Location Map Placeholder */}
