@@ -4,6 +4,7 @@ import { useShops, useCategories } from '@/hooks/useShops';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { useState } from 'react';
+import MobileLayout from '@/components/MobileLayout';
 
 const Index = () => {
   const { user, signInWithGoogle, isLoading: authLoading } = useAuth();
@@ -18,7 +19,7 @@ const Index = () => {
   });
 
   return (
-    <div className="min-h-screen bg-background">
+    <MobileLayout>
       {/* Header */}
       <header className="sticky top-0 z-50 bg-background/95 backdrop-blur border-b border-border">
         <div className="container py-4">
@@ -193,10 +194,7 @@ const Index = () => {
           </div>
         )}
       </main>
-
-      {/* Bottom safe area for mobile */}
-      <div className="h-20" />
-    </div>
+    </MobileLayout>
   );
 };
 
