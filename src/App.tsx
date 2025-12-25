@@ -16,6 +16,7 @@ import Vendor from "./pages/Vendor";
 import VendorProducts from "./pages/VendorProducts";
 import AIStudio from "./pages/AIStudio";
 import Rate from "./pages/Rate";
+import QRRate from "./pages/QRRate";
 import Report from "./pages/Report";
 import Admin from "./pages/Admin";
 import NotFound from "./pages/NotFound";
@@ -47,6 +48,7 @@ const App = () => (
               <Route path="/vendor/products" element={<VendorProducts />} />
               <Route path="/vendor/ai-studio" element={<AIStudio />} />
               <Route path="/rate/:interactionId" element={<Rate />} />
+              <Route path="/qr/:shopId" element={<QRRate />} />
               <Route path="/report/:shopId" element={<Report />} />
               <Route path="/admin" element={<Admin />} />
               {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
