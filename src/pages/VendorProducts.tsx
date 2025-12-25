@@ -15,6 +15,7 @@ import ProductMultiImageUpload from '@/components/ProductMultiImageUpload';
 import BulkProductImport from '@/components/BulkProductImport';
 import ProductImageCarousel from '@/components/ProductImageCarousel';
 import PullToRefresh from '@/components/PullToRefresh';
+import AITextHelper from '@/components/AITextHelper';
 import { ArrowLeft, Plus, Trash2, Edit, Sparkles, Images, Camera, X } from 'lucide-react';
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from '@/hooks/use-toast';
@@ -426,7 +427,15 @@ const VendorProducts = () => {
             </div>
 
             <div className="space-y-2">
-              <Label htmlFor="description">Description</Label>
+              <div className="flex items-center justify-between">
+                <Label htmlFor="description">Description</Label>
+                <AITextHelper
+                  context="description"
+                  currentText={formData.description}
+                  productName={formData.name}
+                  onTextGenerated={(text) => setFormData(prev => ({ ...prev, description: text }))}
+                />
+              </div>
               <Textarea
                 id="description"
                 placeholder="Brief description..."
