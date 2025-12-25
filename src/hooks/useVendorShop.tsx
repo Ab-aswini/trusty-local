@@ -7,11 +7,13 @@ import { toast } from '@/hooks/use-toast';
 export function useVendorShop() {
   const { user } = useAuth();
   const [shop, setShop] = useState<Shop | null>(null);
+  const [allShops, setAllShops] = useState<Shop[]>([]);
   const [isLoading, setIsLoading] = useState(true);
 
-  const fetchShop = useCallback(async () => {
+  const fetchShops = useCallback(async () => {
     if (!user) {
       setShop(null);
+      setAllShops([]);
       setIsLoading(false);
       return;
     }
@@ -21,22 +23,36 @@ export function useVendorShop() {
         .from('shops')
         .select('*')
         .eq('owner_id', user.id)
-        .order('created_at', { ascending: false })
-        .limit(1)
-        .maybeSingle();
+        .order('created_at', { ascending: false });
 
       if (error) throw error;
-      setShop(data as Shop | null);
+      
+      const shops = (data as Shop[]) || [];
+      setAllShops(shops);
+      
+      // Set current shop to first one if not already selected
+      if (shops.length > 0 && !shop) {
+        setShop(shops[0]);
+      } else if (shop) {
+        // Refresh current shop data
+        const updated = shops.find(s => s.id === shop.id);
+        if (updated) setShop(updated);
+        else if (shops.length > 0) setShop(shops[0]);
+      }
     } catch (err) {
-      console.error('Error fetching vendor shop:', err);
+      console.error('Error fetching vendor shops:', err);
     } finally {
       setIsLoading(false);
     }
   }, [user]);
 
   useEffect(() => {
-    fetchShop();
-  }, [fetchShop]);
+    fetchShops();
+  }, [fetchShops]);
+
+  const selectShop = (selectedShop: Shop) => {
+    setShop(selectedShop);
+  };
 
   const createShop = async (shopData: { name: string; whatsapp_number: string; city: string; area: string; story?: string; established_year?: number }) => {
     if (!user) throw new Error('Not authenticated');
@@ -57,6 +73,7 @@ export function useVendorShop() {
 
     if (error) throw error;
     setShop(data as Shop);
+    await fetchShops(); // Refresh all shops
     return data;
   };
 
@@ -75,5 +92,13 @@ export function useVendorShop() {
     return data;
   };
 
-  return { shop, isLoading, createShop, updateShop, refetch: fetchShop };
+  return { 
+    shop, 
+    allShops,
+    isLoading, 
+    createShop, 
+    updateShop, 
+    selectShop,
+    refetch: fetchShops 
+  };
 }

@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useSearchParams } from 'react-router-dom';
 import { useAuth } from '@/hooks/useAuth';
 import { useVendorShop } from '@/hooks/useVendorShop';
 import { useVendorProducts } from '@/hooks/useVendorProducts';
@@ -14,6 +14,8 @@ import SharePortfolio from '@/components/SharePortfolio';
 import ShopImageUpload from '@/components/ShopImageUpload';
 import SocialLinksEditor from '@/components/SocialLinksEditor';
 import ShopDetailsEditor from '@/components/ShopDetailsEditor';
+import VendorStatusBanner from '@/components/VendorStatusBanner';
+import ShopSwitcher, { ShopSwitcherTrigger } from '@/components/ShopSwitcher';
 import { 
   ArrowLeft, 
   Store, 
@@ -35,14 +37,16 @@ import { toast } from '@/hooks/use-toast';
 
 const Vendor = () => {
   const navigate = useNavigate();
+  const [searchParams] = useSearchParams();
   const { user, isLoading: authLoading } = useAuth();
-  const { shop, isLoading: shopLoading, createShop, updateShop, refetch } = useVendorShop();
+  const { shop, allShops, isLoading: shopLoading, createShop, updateShop, selectShop, refetch } = useVendorShop();
   const { products, isLoading: productsLoading, refetch: refetchProducts } = useVendorProducts(shop?.id);
   
   const [isCreating, setIsCreating] = useState(false);
   const [isShareOpen, setIsShareOpen] = useState(false);
   const [isSocialLinksOpen, setIsSocialLinksOpen] = useState(false);
   const [isDetailsOpen, setIsDetailsOpen] = useState(false);
+  const [isShopSwitcherOpen, setIsShopSwitcherOpen] = useState(false);
   const [formData, setFormData] = useState({
     name: '',
     whatsapp_number: '',
@@ -52,6 +56,13 @@ const Vendor = () => {
     established_year: '',
   });
   const [isSubmitting, setIsSubmitting] = useState(false);
+
+  // Handle ?create=true query param
+  useEffect(() => {
+    if (searchParams.get('create') === 'true') {
+      setIsCreating(true);
+    }
+  }, [searchParams]);
 
   useEffect(() => {
     if (!authLoading && !user) {
@@ -278,12 +289,11 @@ const Vendor = () => {
             <button onClick={() => navigate('/profile')} className="p-2 -ml-2 hover:bg-muted rounded-xl transition-calm">
               <ArrowLeft className="h-5 w-5" />
             </button>
-            <div>
-              <h1 className="font-display text-lg font-semibold text-foreground">
-                My Portfolio
-              </h1>
-              <p className="text-xs text-muted-foreground">{shop.name}</p>
-            </div>
+            <ShopSwitcherTrigger
+              shop={shop}
+              shopCount={allShops.length}
+              onClick={() => setIsShopSwitcherOpen(true)}
+            />
           </div>
           <div className="flex items-center gap-2">
             <button
@@ -305,6 +315,8 @@ const Vendor = () => {
       </header>
 
       <main className="px-4 py-4 space-y-4 pb-24">
+        {/* Status Banner */}
+        <VendorStatusBanner shop={shop} />
         {/* Shop Identity Card with Image Upload */}
         <div className="card-soft p-4">
           <div className="flex items-center gap-4 mb-4">
@@ -516,6 +528,15 @@ const Vendor = () => {
         isOpen={isDetailsOpen}
         onClose={() => setIsDetailsOpen(false)}
         onUpdated={() => refetch()}
+      />
+
+      {/* Shop Switcher Modal */}
+      <ShopSwitcher
+        shops={allShops}
+        currentShop={shop}
+        onSelectShop={selectShop}
+        isOpen={isShopSwitcherOpen}
+        onOpenChange={setIsShopSwitcherOpen}
       />
     </MobileLayout>
   );
