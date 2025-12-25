@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '@/hooks/useAuth';
 import { useVendorShop } from '@/hooks/useVendorShop';
@@ -14,7 +14,10 @@ import MobileLayout from '@/components/MobileLayout';
 import ProductMultiImageUpload from '@/components/ProductMultiImageUpload';
 import BulkProductImport from '@/components/BulkProductImport';
 import ProductImageCarousel from '@/components/ProductImageCarousel';
-import { ArrowLeft, Plus, Trash2, Edit, Sparkles, Images } from 'lucide-react';
+import { ArrowLeft, Plus, Trash2, Edit, Sparkles, Images, Camera, X
+
+ } from 'lucide-react';
+import { supabase } from '@/integrations/supabase/client';
 import { toast } from '@/hooks/use-toast';
 import { Product } from '@/types/database';
 
@@ -28,6 +31,9 @@ const VendorProducts = () => {
   const [editingProduct, setEditingProduct] = useState<Product | null>(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [imageDialogProduct, setImageDialogProduct] = useState<Product | null>(null);
+  const [selectedImages, setSelectedImages] = useState<File[]>([]);
+  const [imagePreviews, setImagePreviews] = useState<string[]>([]);
+  const fileInputRef = useRef<HTMLInputElement>(null);
   
   const [formData, setFormData] = useState({
     name: '',
@@ -53,7 +59,37 @@ const VendorProducts = () => {
       price_original: '',
       price_discounted: '',
     });
+    setSelectedImages([]);
+    setImagePreviews([]);
     setEditingProduct(null);
+  };
+
+  const handleImageSelect = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const files = e.target.files;
+    if (!files) return;
+
+    const newFiles: File[] = [];
+    const newPreviews: string[] = [];
+
+    for (let i = 0; i < files.length; i++) {
+      const file = files[i];
+      if (!file.type.startsWith('image/')) continue;
+      if (file.size > 5 * 1024 * 1024) {
+        toast({ title: `${file.name} is too large (max 5MB)`, variant: "destructive" });
+        continue;
+      }
+      newFiles.push(file);
+      newPreviews.push(URL.createObjectURL(file));
+    }
+
+    setSelectedImages(prev => [...prev, ...newFiles]);
+    setImagePreviews(prev => [...prev, ...newPreviews]);
+    if (fileInputRef.current) fileInputRef.current.value = '';
+  };
+
+  const removeImage = (index: number) => {
+    setSelectedImages(prev => prev.filter((_, i) => i !== index));
+    setImagePreviews(prev => prev.filter((_, i) => i !== index));
   };
 
   const openCreateDialog = () => {
@@ -74,7 +110,47 @@ const VendorProducts = () => {
       price_original: product.price_original?.toString() || '',
       price_discounted: product.price_discounted?.toString() || '',
     });
+    setSelectedImages([]);
+    setImagePreviews([]);
     setIsDialogOpen(true);
+  };
+
+  const uploadProductImages = async (productId: string) => {
+    for (let i = 0; i < selectedImages.length; i++) {
+      const file = selectedImages[i];
+      const fileExt = file.name.split('.').pop();
+      const fileName = `${productId}-${Date.now()}-${i}.${fileExt}`;
+      const filePath = `products/${fileName}`;
+
+      const { error: uploadError } = await supabase.storage
+        .from('shop-images')
+        .upload(filePath, file, { upsert: true });
+
+      if (uploadError) throw uploadError;
+
+      const { data: { publicUrl } } = supabase.storage
+        .from('shop-images')
+        .getPublicUrl(filePath);
+
+      const isPrimary = i === 0;
+
+      await supabase
+        .from('product_images')
+        .insert({
+          product_id: productId,
+          image_url: publicUrl,
+          display_order: i,
+          is_primary: isPrimary,
+        });
+
+      // Set main product image
+      if (isPrimary) {
+        await supabase
+          .from('products')
+          .update({ image_url: publicUrl })
+          .eq('id', productId);
+      }
+    }
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -106,7 +182,13 @@ const VendorProducts = () => {
         await updateProduct(editingProduct.id, productData);
         toast({ title: "Product updated!" });
       } else {
-        await createProduct(productData);
+        const newProduct = await createProduct(productData);
+        
+        // Upload images if any
+        if (selectedImages.length > 0 && newProduct?.id) {
+          await uploadProductImages(newProduct.id);
+        }
+        
         toast({ title: "Product added!" });
       }
       
@@ -265,6 +347,68 @@ const VendorProducts = () => {
           </DialogHeader>
           
           <form onSubmit={handleSubmit} className="space-y-4">
+            {/* Image Upload Section - Only show for new products */}
+            {!editingProduct && (
+              <div className="space-y-2">
+                <Label>Product Images</Label>
+                <div className="flex flex-wrap gap-2">
+                  {imagePreviews.map((preview, index) => (
+                    <div key={index} className="relative w-16 h-16 rounded-lg overflow-hidden bg-muted">
+                      <img src={preview} alt={`Preview ${index + 1}`} className="w-full h-full object-cover" />
+                      <button
+                        type="button"
+                        onClick={() => removeImage(index)}
+                        className="absolute -top-1 -right-1 w-5 h-5 bg-destructive text-destructive-foreground rounded-full flex items-center justify-center"
+                      >
+                        <X className="h-3 w-3" />
+                      </button>
+                      {index === 0 && (
+                        <span className="absolute bottom-0 left-0 right-0 bg-primary text-primary-foreground text-[8px] text-center py-0.5">
+                          Main
+                        </span>
+                      )}
+                    </div>
+                  ))}
+                  <button
+                    type="button"
+                    onClick={() => fileInputRef.current?.click()}
+                    className="w-16 h-16 rounded-lg border-2 border-dashed border-border hover:border-primary/50 flex flex-col items-center justify-center gap-1 text-muted-foreground hover:text-primary transition-calm"
+                  >
+                    <Camera className="h-5 w-5" />
+                    <span className="text-[9px]">Add</span>
+                  </button>
+                </div>
+                <input
+                  ref={fileInputRef}
+                  type="file"
+                  accept="image/*"
+                  multiple
+                  onChange={handleImageSelect}
+                  className="hidden"
+                />
+                <p className="text-xs text-muted-foreground">First image will be the main photo</p>
+              </div>
+            )}
+
+            {/* For editing, show link to manage images */}
+            {editingProduct && (
+              <div className="space-y-2">
+                <Label>Product Images</Label>
+                <Button
+                  type="button"
+                  variant="outline"
+                  className="w-full gap-2"
+                  onClick={() => {
+                    setIsDialogOpen(false);
+                    setImageDialogProduct(editingProduct);
+                  }}
+                >
+                  <Images className="h-4 w-4" />
+                  Manage Images
+                </Button>
+              </div>
+            )}
+
             <div className="space-y-2">
               <Label htmlFor="productName">Product Name *</Label>
               <Input
