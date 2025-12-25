@@ -88,6 +88,39 @@ export type Database = {
           },
         ]
       }
+      consumer_trust: {
+        Row: {
+          created_at: string
+          id: string
+          positive_interactions: number
+          total_interactions: number
+          trust_level: string
+          trust_score: number
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          positive_interactions?: number
+          total_interactions?: number
+          trust_level?: string
+          trust_score?: number
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          positive_interactions?: number
+          total_interactions?: number
+          trust_level?: string
+          trust_score?: number
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
       interactions: {
         Row: {
           consumer_id: string | null
@@ -227,30 +260,48 @@ export type Database = {
           id: string
           interaction_id: string
           is_calm: boolean
+          is_clear_communication: boolean
           is_helpful: boolean
           is_honest: boolean
+          is_patient: boolean
           is_respectful: boolean
+          review_text: string | null
+          reviewer_display_name: string | null
           shop_id: string
+          source: string
+          star_rating: number | null
         }
         Insert: {
           created_at?: string
           id?: string
           interaction_id: string
           is_calm?: boolean
+          is_clear_communication?: boolean
           is_helpful?: boolean
           is_honest?: boolean
+          is_patient?: boolean
           is_respectful?: boolean
+          review_text?: string | null
+          reviewer_display_name?: string | null
           shop_id: string
+          source?: string
+          star_rating?: number | null
         }
         Update: {
           created_at?: string
           id?: string
           interaction_id?: string
           is_calm?: boolean
+          is_clear_communication?: boolean
           is_helpful?: boolean
           is_honest?: boolean
+          is_patient?: boolean
           is_respectful?: boolean
+          review_text?: string | null
+          reviewer_display_name?: string | null
           shop_id?: string
+          source?: string
+          star_rating?: number | null
         }
         Relationships: [
           {
@@ -470,6 +521,39 @@ export type Database = {
           id?: string
           role?: Database["public"]["Enums"]["app_role"]
           user_id?: string
+        }
+        Relationships: []
+      }
+      vendor_feedback: {
+        Row: {
+          consumer_id: string
+          created_at: string
+          id: string
+          interaction_id: string
+          is_calm: boolean
+          is_punctual: boolean
+          is_respectful: boolean
+          shop_id: string
+        }
+        Insert: {
+          consumer_id: string
+          created_at?: string
+          id?: string
+          interaction_id: string
+          is_calm?: boolean
+          is_punctual?: boolean
+          is_respectful?: boolean
+          shop_id: string
+        }
+        Update: {
+          consumer_id?: string
+          created_at?: string
+          id?: string
+          interaction_id?: string
+          is_calm?: boolean
+          is_punctual?: boolean
+          is_respectful?: boolean
+          shop_id?: string
         }
         Relationships: []
       }

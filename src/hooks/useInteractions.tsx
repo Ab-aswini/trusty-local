@@ -60,15 +60,28 @@ export function useInteractions() {
     }
   };
 
-  const submitRating = async (
+  const submitReview = async (
     interactionId: string,
     shopId: string,
-    tags: { isHonest: boolean; isRespectful: boolean; isHelpful: boolean; isCalm: boolean }
+    data: {
+      starRating: number;
+      tags: {
+        isHonest: boolean;
+        isRespectful: boolean;
+        isHelpful: boolean;
+        isCalm: boolean;
+        isPatient: boolean;
+        isClearCommunication: boolean;
+      };
+      reviewText?: string;
+      reviewerDisplayName?: string;
+      source?: string;
+    }
   ) => {
     if (!user) {
       toast({
         title: "Sign in required",
-        description: "Please sign in to submit ratings.",
+        description: "Please sign in to submit reviews.",
         variant: "destructive",
       });
       return false;
@@ -80,27 +93,45 @@ export function useInteractions() {
         .insert({
           interaction_id: interactionId,
           shop_id: shopId,
-          is_honest: tags.isHonest,
-          is_respectful: tags.isRespectful,
-          is_helpful: tags.isHelpful,
-          is_calm: tags.isCalm,
+          star_rating: data.starRating,
+          is_honest: data.tags.isHonest,
+          is_respectful: data.tags.isRespectful,
+          is_helpful: data.tags.isHelpful,
+          is_calm: data.tags.isCalm,
+          is_patient: data.tags.isPatient,
+          is_clear_communication: data.tags.isClearCommunication,
+          review_text: data.reviewText || null,
+          reviewer_display_name: data.reviewerDisplayName || null,
+          source: data.source || 'whatsapp',
         });
 
       if (error) throw error;
 
-      toast({ title: "Thank you for your feedback!" });
+      toast({ title: "Thank you for your review!" });
       fetchPendingRatings();
       return true;
     } catch (err) {
-      console.error('Error submitting rating:', err);
+      console.error('Error submitting review:', err);
       toast({
         title: "Error",
-        description: "Unable to submit rating. Please try again.",
+        description: "Unable to submit review. Please try again.",
         variant: "destructive",
       });
       return false;
     }
   };
 
-  return { pendingRatings, isLoading, logInteraction, submitRating, refetch: fetchPendingRatings };
+  // Keep old method for backward compatibility
+  const submitRating = async (
+    interactionId: string,
+    shopId: string,
+    tags: { isHonest: boolean; isRespectful: boolean; isHelpful: boolean; isCalm: boolean }
+  ) => {
+    return submitReview(interactionId, shopId, {
+      starRating: 5,
+      tags: { ...tags, isPatient: false, isClearCommunication: false },
+    });
+  };
+
+  return { pendingRatings, isLoading, logInteraction, submitRating, submitReview, refetch: fetchPendingRatings };
 }
