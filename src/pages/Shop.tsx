@@ -166,6 +166,7 @@ const Shop = () => {
               <h1 className="font-display text-2xl font-semibold text-white drop-shadow-lg">{shop.name}</h1>
               <p className="text-white/80 text-sm mt-1">
                 {shop.category?.icon} {shop.category?.name} {shop.sub_category && `· ${shop.sub_category}`}
+                {shop.established_year && ` · Since ${shop.established_year}`}
               </p>
             </div>
             

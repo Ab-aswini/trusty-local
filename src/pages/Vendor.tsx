@@ -13,6 +13,7 @@ import VendorPortfolioPreview from '@/components/VendorPortfolioPreview';
 import SharePortfolio from '@/components/SharePortfolio';
 import ShopImageUpload from '@/components/ShopImageUpload';
 import SocialLinksEditor from '@/components/SocialLinksEditor';
+import ShopDetailsEditor from '@/components/ShopDetailsEditor';
 import { 
   ArrowLeft, 
   Store, 
@@ -27,7 +28,8 @@ import {
   Star,
   Users,
   TrendingUp,
-  Link2
+  Link2,
+  Settings
 } from 'lucide-react';
 import { toast } from '@/hooks/use-toast';
 
@@ -40,12 +42,14 @@ const Vendor = () => {
   const [isCreating, setIsCreating] = useState(false);
   const [isShareOpen, setIsShareOpen] = useState(false);
   const [isSocialLinksOpen, setIsSocialLinksOpen] = useState(false);
+  const [isDetailsOpen, setIsDetailsOpen] = useState(false);
   const [formData, setFormData] = useState({
     name: '',
     whatsapp_number: '',
     city: '',
     area: '',
     story: '',
+    established_year: '',
   });
   const [isSubmitting, setIsSubmitting] = useState(false);
 
@@ -63,6 +67,7 @@ const Vendor = () => {
         city: shop.city,
         area: shop.area,
         story: shop.story || '',
+        established_year: shop.established_year?.toString() || '',
       });
     }
   }, [shop]);
@@ -82,7 +87,10 @@ const Vendor = () => {
     setIsSubmitting(true);
     
     try {
-      await createShop(formData);
+      await createShop({
+        ...formData,
+        established_year: formData.established_year ? parseInt(formData.established_year) : undefined,
+      });
       toast({ title: "Shop created!", description: "Your digital portfolio is ready." });
       setIsCreating(false);
       refetch();
@@ -221,6 +229,23 @@ const Vendor = () => {
                   className="h-12"
                 />
               </div>
+            </div>
+
+            <div className="space-y-2">
+              <Label htmlFor="established">Established Year (Optional)</Label>
+              <Input
+                id="established"
+                type="number"
+                placeholder="e.g., 1995"
+                value={formData.established_year}
+                onChange={(e) => setFormData(prev => ({ ...prev, established_year: e.target.value }))}
+                className="h-12"
+                min="1900"
+                max={new Date().getFullYear()}
+              />
+              <p className="text-xs text-muted-foreground">
+                Show customers how long you've been in business
+              </p>
             </div>
 
             <div className="space-y-2">
@@ -416,6 +441,24 @@ const Vendor = () => {
             </div>
             <ChevronRight className="h-5 w-5 text-muted-foreground" />
           </button>
+
+          {/* Shop Details */}
+          <button
+            onClick={() => setIsDetailsOpen(true)}
+            className="card-soft p-4 w-full flex items-center gap-3 hover:shadow-elevated transition-calm"
+          >
+            <div className="w-12 h-12 rounded-full bg-muted flex items-center justify-center">
+              <Settings className="h-6 w-6 text-muted-foreground" />
+            </div>
+            <div className="flex-1 text-left">
+              <h3 className="font-medium text-foreground">Shop Details</h3>
+              <p className="text-sm text-muted-foreground">
+                {shop.established_year ? `Since ${shop.established_year} • ` : ''}
+                Edit name, location, story
+              </p>
+            </div>
+            <ChevronRight className="h-5 w-5 text-muted-foreground" />
+          </button>
         </div>
 
         {/* Share Tips */}
@@ -464,6 +507,14 @@ const Vendor = () => {
         shop={shop}
         isOpen={isSocialLinksOpen}
         onClose={() => setIsSocialLinksOpen(false)}
+        onUpdated={() => refetch()}
+      />
+
+      {/* Shop Details Modal */}
+      <ShopDetailsEditor
+        shop={shop}
+        isOpen={isDetailsOpen}
+        onClose={() => setIsDetailsOpen(false)}
         onUpdated={() => refetch()}
       />
     </MobileLayout>
