@@ -17,6 +17,7 @@ import ShopDetailsEditor from '@/components/ShopDetailsEditor';
 import VendorStatusBanner from '@/components/VendorStatusBanner';
 import ShopSwitcher, { ShopSwitcherTrigger } from '@/components/ShopSwitcher';
 import VendorOnboardingChecklist from '@/components/VendorOnboardingChecklist';
+import VendorAnalyticsDashboard from '@/components/VendorAnalyticsDashboard';
 import { 
   ArrowLeft, 
   Store, 
@@ -364,30 +365,8 @@ const Vendor = () => {
           </div>
         </div>
 
-        {/* Quick Stats */}
-        <div className="grid grid-cols-3 gap-3">
-          <div className="card-soft p-3 text-center">
-            <div className="flex items-center justify-center gap-1">
-              <Users className="h-4 w-4 text-primary" />
-              <span className="font-semibold text-foreground">{shop.interaction_count}</span>
-            </div>
-            <p className="text-xs text-muted-foreground">Views</p>
-          </div>
-          <div className="card-soft p-3 text-center">
-            <div className="flex items-center justify-center gap-1">
-              <Star className="h-4 w-4 text-amber-500" />
-              <span className="font-semibold text-foreground">{shop.positive_tag_count}</span>
-            </div>
-            <p className="text-xs text-muted-foreground">Ratings</p>
-          </div>
-          <div className="card-soft p-3 text-center">
-            <div className="flex items-center justify-center gap-1">
-              <TrendingUp className="h-4 w-4 text-green-500" />
-              <span className="font-semibold text-foreground capitalize">{shop.trust_state}</span>
-            </div>
-            <p className="text-xs text-muted-foreground">Trust</p>
-          </div>
-        </div>
+        {/* Analytics Dashboard */}
+        <VendorAnalyticsDashboard shopId={shop.id} />
 
         {/* Portfolio Preview */}
         <div>

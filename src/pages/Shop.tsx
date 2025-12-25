@@ -1,3 +1,4 @@
+import { useEffect, useRef } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { useShopById } from '@/hooks/useShops';
 import { useProducts } from '@/hooks/useVendorProducts';
@@ -34,6 +35,15 @@ const Shop = () => {
   const { isShopSaved, toggleSave } = useSavedShops();
   const { logInteraction } = useInteractions();
   const { summary: ratingsSummary, isLoading: ratingsLoading } = useShopRatings(shopId);
+  const viewLoggedRef = useRef(false);
+
+  // Log view interaction once per page load
+  useEffect(() => {
+    if (shop && user && !viewLoggedRef.current) {
+      viewLoggedRef.current = true;
+      logInteraction(shop.id, 'view');
+    }
+  }, [shop, user, logInteraction]);
 
   const handleWhatsAppClick = async () => {
     if (!shop) return;
