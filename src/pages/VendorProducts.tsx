@@ -9,10 +9,12 @@ import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
+import { ScrollArea } from '@/components/ui/scroll-area';
 import MobileLayout from '@/components/MobileLayout';
-import ProductImageUpload from '@/components/ProductImageUpload';
+import ProductMultiImageUpload from '@/components/ProductMultiImageUpload';
 import BulkProductImport from '@/components/BulkProductImport';
-import { ArrowLeft, Plus, Trash2, Edit, Sparkles } from 'lucide-react';
+import ProductImageCarousel from '@/components/ProductImageCarousel';
+import { ArrowLeft, Plus, Trash2, Edit, Sparkles, Images } from 'lucide-react';
 import { toast } from '@/hooks/use-toast';
 import { Product } from '@/types/database';
 
@@ -25,6 +27,7 @@ const VendorProducts = () => {
   const [isDialogOpen, setIsDialogOpen] = useState(false);
   const [editingProduct, setEditingProduct] = useState<Product | null>(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [imageDialogProduct, setImageDialogProduct] = useState<Product | null>(null);
   
   const [formData, setFormData] = useState({
     name: '',
@@ -189,12 +192,19 @@ const VendorProducts = () => {
           <div className="space-y-3">
             {products.map((product) => (
               <div key={product.id} className="card-soft p-3 flex gap-3">
-                <ProductImageUpload
-                  productId={product.id}
-                  currentImage={product.image_url}
-                  productName={product.name}
-                  onImageUpdated={() => refetch()}
-                />
+                <button 
+                  onClick={() => setImageDialogProduct(product)}
+                  className="relative w-16 h-16 bg-muted rounded-xl overflow-hidden flex-shrink-0 group"
+                >
+                  <ProductImageCarousel
+                    productId={product.id}
+                    fallbackImage={product.image_url}
+                    className="w-full h-full"
+                  />
+                  <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-calm flex items-center justify-center">
+                    <Images className="h-4 w-4 text-white" />
+                  </div>
+                </button>
                 <div className="flex-1 min-w-0">
                   <h3 className="font-medium text-sm truncate">{product.name}</h3>
                   <p className="text-xs text-primary font-medium">
@@ -214,6 +224,13 @@ const VendorProducts = () => {
                     className="p-2 hover:bg-muted rounded-lg transition-calm"
                   >
                     <Edit className="h-4 w-4" />
+                  </button>
+                  <button
+                    onClick={() => setImageDialogProduct(product)}
+                    className="p-2 hover:bg-muted rounded-lg transition-calm"
+                    title="Manage images"
+                  >
+                    <Images className="h-4 w-4" />
                   </button>
                   <button
                     onClick={() => handleDelete(product.id)}
@@ -369,6 +386,27 @@ const VendorProducts = () => {
               </Button>
             </div>
           </form>
+        </DialogContent>
+      </Dialog>
+
+      {/* Image Management Dialog */}
+      <Dialog open={!!imageDialogProduct} onOpenChange={(open) => !open && setImageDialogProduct(null)}>
+        <DialogContent className="max-w-md mx-4">
+          <DialogHeader>
+            <DialogTitle className="flex items-center gap-2">
+              <Images className="h-5 w-5" />
+              {imageDialogProduct?.name} - Images
+            </DialogTitle>
+          </DialogHeader>
+          
+          {imageDialogProduct && (
+            <ScrollArea className="max-h-[60vh]">
+              <ProductMultiImageUpload
+                productId={imageDialogProduct.id}
+                onImagesUpdated={() => refetch()}
+              />
+            </ScrollArea>
+          )}
         </DialogContent>
       </Dialog>
     </MobileLayout>

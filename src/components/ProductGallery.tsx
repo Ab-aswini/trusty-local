@@ -2,6 +2,7 @@ import { useState, useMemo } from 'react';
 import { X, ChevronLeft, ChevronRight, MessageCircle } from 'lucide-react';
 import { Product } from '@/types/database';
 import { Button } from '@/components/ui/button';
+import ProductImageCarousel from '@/components/ProductImageCarousel';
 
 interface ProductGalleryProps {
   products: Product[];
@@ -129,19 +130,13 @@ const ProductGallery = ({ products, shopName, whatsappNumber, onProductInquiry }
               className="cursor-pointer"
             >
               <div className="aspect-square bg-muted overflow-hidden relative">
-                {product.image_url ? (
-                  <img 
-                    src={product.image_url} 
-                    alt={product.name} 
-                    className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300" 
-                  />
-                ) : (
-                  <div className="w-full h-full flex items-center justify-center text-3xl bg-gradient-to-br from-muted to-muted/50">
-                    📦
-                  </div>
-                )}
+                <ProductImageCarousel
+                  productId={product.id}
+                  fallbackImage={product.image_url}
+                  className="w-full h-full"
+                />
                 {product.price_type === 'discount' && product.price_original && product.price_discounted && (
-                  <div className="absolute top-2 left-2 bg-red-500 text-white text-[10px] font-bold px-2 py-0.5 rounded-full">
+                  <div className="absolute top-2 left-2 bg-red-500 text-white text-[10px] font-bold px-2 py-0.5 rounded-full z-10">
                     {Math.round((1 - product.price_discounted / product.price_original) * 100)}% OFF
                   </div>
                 )}
@@ -220,17 +215,13 @@ const ProductGallery = ({ products, shopName, whatsappNumber, onProductInquiry }
             onClick={(e) => e.stopPropagation()}
           >
             <div className="aspect-square bg-muted relative">
-              {selectedProduct.image_url ? (
-                <img 
-                  src={selectedProduct.image_url} 
-                  alt={selectedProduct.name} 
-                  className="w-full h-full object-cover" 
-                />
-              ) : (
-                <div className="w-full h-full flex items-center justify-center text-6xl">📦</div>
-              )}
+              <ProductImageCarousel
+                productId={selectedProduct.id}
+                fallbackImage={selectedProduct.image_url}
+                className="w-full h-full"
+              />
               {selectedProduct.price_type === 'discount' && selectedProduct.price_original && selectedProduct.price_discounted && (
-                <div className="absolute top-3 left-3 bg-red-500 text-white text-xs font-bold px-3 py-1 rounded-full">
+                <div className="absolute top-3 left-3 bg-red-500 text-white text-xs font-bold px-3 py-1 rounded-full z-10">
                   {Math.round((1 - selectedProduct.price_discounted / selectedProduct.price_original) * 100)}% OFF
                 </div>
               )}
