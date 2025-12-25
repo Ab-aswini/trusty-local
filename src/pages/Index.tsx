@@ -7,10 +7,12 @@ import { Input } from '@/components/ui/input';
 import { useState } from 'react';
 import MobileLayout from '@/components/MobileLayout';
 import PendingRatingsBanner from '@/components/PendingRatingsBanner';
+import ShopCard from '@/components/ShopCard';
+import CategoryFilter from '@/components/CategoryFilter';
 
 const Index = () => {
   const navigate = useNavigate();
-  const { user, signInWithGoogle, isLoading: authLoading } = useAuth();
+  const { user, isLoading: authLoading } = useAuth();
   const { categories } = useCategories();
   const [selectedCategory, setSelectedCategory] = useState<string | undefined>();
   const [searchQuery, setSearchQuery] = useState('');
@@ -32,7 +34,10 @@ const Index = () => {
             </h1>
             
             {authLoading ? null : user ? (
-              <div className="flex items-center gap-2">
+              <button 
+                onClick={() => navigate('/profile')}
+                className="flex items-center gap-2 hover:opacity-80 transition-calm"
+              >
                 <span className="text-sm text-muted-foreground hidden sm:block">
                   {user.email?.split('@')[0]}
                 </span>
@@ -41,10 +46,10 @@ const Index = () => {
                     {user.email?.[0].toUpperCase()}
                   </span>
                 </div>
-              </div>
+              </button>
             ) : (
-              <Button onClick={signInWithGoogle} variant="outline" size="sm">
-                Sign in with Google
+              <Button onClick={() => navigate('/auth')} variant="outline" size="sm">
+                Sign In
               </Button>
             )}
           </div>
@@ -54,7 +59,7 @@ const Index = () => {
             <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
             <Input
               placeholder="Search shops, products, areas..."
-              className="pl-10 bg-muted/50 border-0"
+              className="pl-10 bg-muted/50 border-0 h-11"
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
             />
@@ -66,137 +71,79 @@ const Index = () => {
       <PendingRatingsBanner />
 
       {/* Location hint */}
-      <div className="bg-primary/5 border-b border-primary/10">
+      <div className="bg-gradient-to-r from-primary/10 via-primary/5 to-transparent border-b border-primary/10">
         <div className="container py-2 flex items-center gap-2 text-sm text-muted-foreground">
-          <MapPin className="h-4 w-4" />
+          <MapPin className="h-4 w-4 text-primary" />
           <span>Showing shops nearby</span>
         </div>
       </div>
 
       {/* Categories */}
-      <div className="border-b border-border overflow-x-auto scrollbar-hide">
-        <div className="container py-3 flex gap-2">
-          <button
-            onClick={() => setSelectedCategory(undefined)}
-            className={`px-4 py-2 rounded-full text-sm font-medium whitespace-nowrap transition-calm ${
-              !selectedCategory
-                ? 'bg-primary text-primary-foreground'
-                : 'bg-muted text-muted-foreground hover:bg-muted/80'
-            }`}
-          >
-            All
-          </button>
-          {categories.map((cat) => (
-            <button
-              key={cat.id}
-              onClick={() => setSelectedCategory(cat.id)}
-              className={`px-4 py-2 rounded-full text-sm font-medium whitespace-nowrap transition-calm ${
-                selectedCategory === cat.id
-                  ? 'bg-primary text-primary-foreground'
-                  : 'bg-muted text-muted-foreground hover:bg-muted/80'
-              }`}
-            >
-              {cat.icon} {cat.name}
-            </button>
-          ))}
-        </div>
-      </div>
+      <CategoryFilter 
+        categories={categories}
+        selectedCategory={selectedCategory}
+        onSelectCategory={setSelectedCategory}
+      />
 
       {/* Shops Grid */}
       <main className="container py-6">
+        {/* Results count */}
+        {!shopsLoading && shops.length > 0 && (
+          <p className="text-sm text-muted-foreground mb-4">
+            {shops.length} {shops.length === 1 ? 'shop' : 'shops'} found
+            {selectedCategory && categories.find(c => c.id === selectedCategory) && (
+              <> in <span className="font-medium text-foreground">{categories.find(c => c.id === selectedCategory)?.name}</span></>
+            )}
+          </p>
+        )}
+
         {shopsLoading ? (
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5">
             {[...Array(6)].map((_, i) => (
-              <div key={i} className="card-soft p-4 animate-pulse">
-                <div className="h-32 bg-muted rounded-xl mb-3" />
-                <div className="h-4 bg-muted rounded w-3/4 mb-2" />
-                <div className="h-3 bg-muted rounded w-1/2" />
+              <div key={i} className="card-soft overflow-hidden animate-pulse">
+                <div className="h-36 bg-muted" />
+                <div className="p-4">
+                  <div className="flex gap-2 mb-3">
+                    <div className="h-6 bg-muted rounded-full w-20" />
+                    <div className="h-6 bg-muted rounded-full w-24" />
+                  </div>
+                  <div className="flex gap-2">
+                    <div className="flex-1 aspect-square bg-muted rounded-lg" />
+                    <div className="flex-1 aspect-square bg-muted rounded-lg" />
+                    <div className="flex-1 aspect-square bg-muted rounded-lg" />
+                  </div>
+                </div>
               </div>
             ))}
           </div>
         ) : shops.length === 0 ? (
           <div className="empty-state">
+            <div className="w-20 h-20 mx-auto mb-4 rounded-full bg-muted flex items-center justify-center">
+              <Search className="h-8 w-8 text-muted-foreground" />
+            </div>
             <p className="empty-state-title">No shops found</p>
             <p className="empty-state-message">
               {searchQuery
-                ? "Try a different search term."
+                ? "Try a different search term or browse all categories."
                 : "New shops are joining every day. Check back soon!"}
             </p>
+            {(searchQuery || selectedCategory) && (
+              <Button 
+                variant="outline" 
+                className="mt-4"
+                onClick={() => {
+                  setSearchQuery('');
+                  setSelectedCategory(undefined);
+                }}
+              >
+                Clear filters
+              </Button>
+            )}
           </div>
         ) : (
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5">
             {shops.map((shop) => (
-              <div
-                key={shop.id}
-                onClick={() => navigate(`/shop/${shop.id}`)}
-                className="card-soft p-4 hover:shadow-elevated transition-calm cursor-pointer"
-              >
-                {/* Shop Image */}
-                <div className="relative h-32 bg-muted rounded-xl mb-3 overflow-hidden">
-                  {shop.image_url ? (
-                    <img
-                      src={shop.image_url}
-                      alt={shop.name}
-                      className="w-full h-full object-cover"
-                    />
-                  ) : (
-                    <div className="w-full h-full flex items-center justify-center text-4xl">
-                      {shop.category?.icon || '🏪'}
-                    </div>
-                  )}
-                  
-                  {/* Availability Badge */}
-                  <span
-                    className={`absolute top-2 right-2 px-2 py-0.5 rounded-full text-xs font-medium ${
-                      shop.availability_status === 'open'
-                        ? 'status-open'
-                        : shop.availability_status === 'closing_soon'
-                        ? 'status-closing'
-                        : 'status-closed'
-                    }`}
-                  >
-                    {shop.availability_status === 'open'
-                      ? 'Open'
-                      : shop.availability_status === 'closing_soon'
-                      ? 'Closing Soon'
-                      : 'Closed'}
-                  </span>
-                </div>
-
-                {/* Shop Info */}
-                <div className="flex items-start justify-between gap-2">
-                  <div className="flex-1 min-w-0">
-                    <h3 className="font-display font-medium text-foreground truncate">
-                      {shop.name}
-                    </h3>
-                    <p className="text-sm text-muted-foreground truncate">
-                      {shop.category?.name} · {shop.area}
-                    </p>
-                  </div>
-                  
-                  {/* Trust Badge */}
-                  <span
-                    className={`flex-shrink-0 w-6 h-6 rounded-full flex items-center justify-center text-xs ${
-                      shop.trust_state === 'trusted'
-                        ? 'trust-badge-trusted'
-                        : shop.trust_state === 'reliable'
-                        ? 'trust-badge-reliable'
-                        : shop.trust_state === 'active'
-                        ? 'trust-badge-active'
-                        : 'trust-badge-new'
-                    }`}
-                    title={`Trust: ${shop.trust_state}`}
-                  >
-                    {shop.trust_state === 'trusted'
-                      ? '✓'
-                      : shop.trust_state === 'reliable'
-                      ? '★'
-                      : shop.trust_state === 'active'
-                      ? '●'
-                      : '◎'}
-                  </span>
-                </div>
-              </div>
+              <ShopCard key={shop.id} shop={shop} />
             ))}
           </div>
         )}
