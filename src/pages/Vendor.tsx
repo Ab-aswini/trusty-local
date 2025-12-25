@@ -19,6 +19,7 @@ import ShopSwitcher, { ShopSwitcherTrigger } from '@/components/ShopSwitcher';
 import VendorOnboardingChecklist from '@/components/VendorOnboardingChecklist';
 import VendorAnalyticsDashboard from '@/components/VendorAnalyticsDashboard';
 import VendorCustomerFeedback from '@/components/VendorCustomerFeedback';
+import AITextHelper from '@/components/AITextHelper';
 import { 
   ArrowLeft, 
   Store, 
@@ -263,7 +264,15 @@ const Vendor = () => {
             </div>
 
             <div className="space-y-2">
-              <Label htmlFor="story">About Your Shop (Optional)</Label>
+              <div className="flex items-center justify-between">
+                <Label htmlFor="story">About Your Shop (Optional)</Label>
+                <AITextHelper
+                  context="story"
+                  currentText={formData.story}
+                  shopName={formData.name}
+                  onTextGenerated={(text) => setFormData(prev => ({ ...prev, story: text }))}
+                />
+              </div>
               <Textarea
                 id="story"
                 placeholder="Tell customers what makes your shop special..."

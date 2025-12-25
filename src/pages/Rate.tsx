@@ -7,6 +7,7 @@ import { Button } from '@/components/ui/button';
 import { Textarea } from '@/components/ui/textarea';
 import MobileLayout from '@/components/MobileLayout';
 import StarRating from '@/components/StarRating';
+import AITextHelper from '@/components/AITextHelper';
 import { ArrowLeft, Check, AlertCircle } from 'lucide-react';
 import { toast } from '@/hooks/use-toast';
 
@@ -237,9 +238,16 @@ const Rate = () => {
 
         {/* Optional Comment */}
         <div className="card-soft p-4 mb-6">
-          <p className="text-sm font-medium text-foreground mb-2">
-            Add a comment (optional)
-          </p>
+          <div className="flex items-center justify-between mb-2">
+            <p className="text-sm font-medium text-foreground">
+              Add a comment (optional)
+            </p>
+            <AITextHelper
+              context="review"
+              currentText={reviewText}
+              onTextGenerated={(text) => setReviewText(text)}
+            />
+          </div>
           <Textarea
             placeholder="Share your experience in a few words..."
             value={reviewText}

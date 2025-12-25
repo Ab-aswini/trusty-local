@@ -12,6 +12,7 @@ import {
   DialogTitle,
   DialogFooter,
 } from '@/components/ui/dialog';
+import AITextHelper from '@/components/AITextHelper';
 import { Settings, Loader2, Check } from 'lucide-react';
 import { toast } from '@/hooks/use-toast';
 
@@ -138,7 +139,15 @@ const ShopDetailsEditor = ({ shop, isOpen, onClose, onUpdated }: ShopDetailsEdit
           </div>
 
           <div className="space-y-2">
-            <Label htmlFor="edit-story">About Your Shop</Label>
+            <div className="flex items-center justify-between">
+              <Label htmlFor="edit-story">About Your Shop</Label>
+              <AITextHelper
+                context="story"
+                currentText={formData.story}
+                shopName={shop.name}
+                onTextGenerated={(text) => setFormData(prev => ({ ...prev, story: text }))}
+              />
+            </div>
             <Textarea
               id="edit-story"
               placeholder="Tell customers what makes your shop special..."
